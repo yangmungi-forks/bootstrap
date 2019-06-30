@@ -7,10 +7,10 @@
 
 {{ if (or (eq .Page.Layout "docs") (ne .Page.Layout "examples")) -}}
 {{- "<!-- Documentation extras -->" | safeHTML }}
+{{- end }}
 {{ if eq .Page.Layout "docs" -}}
 <link href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" rel="stylesheet">
 {{- end -}}
-{{- if (ne .Page.Layout "examples") }}
+{{- if or (ne .Page.Layout "examples") (eq .Page.Params.include_docs_stylesheets true) }}
 <link href="/docs/{{ .Site.Params.docs_version }}/assets/css/docs.min.css" rel="stylesheet">
 {{- end -}}
-{{- end }}
