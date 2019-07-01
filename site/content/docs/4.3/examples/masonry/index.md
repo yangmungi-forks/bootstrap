@@ -11,11 +11,12 @@ extra_js:
 ---
 
 Masonry is not included in Bootstrap, but can easily be added by including your locally hosted file or using the following hosted javascript file:
+
 ```js
 <script src="https://cdnjs.cloudflare.com/ajax/libs/masonry/4.2.2/masonry.pkgd.min.js" integrity="sha256-Nn1q/fx0H7SNLZMQ5Hw5JLaTRZp0yILA/FRexe19VdI=" crossorigin="anonymous" async></script>
 ```
 
-By adding `data-masonry='{"percentPosition": true }'` to the `.row` wrapper, we can combine the powers of Bootstrap's responsive grid and Masonry's positioning. 
+By adding `data-masonry='{"percentPosition": true }'` to the `.row` wrapper, we can combine the powers of Bootstrap's responsive grid and Masonry's positioning.
 
 {{< example >}}
 <div class="row" data-masonry='{"percentPosition": true }'>

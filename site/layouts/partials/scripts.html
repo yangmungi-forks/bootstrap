@@ -21,7 +21,5 @@
 {{- end -}}
 
 {{ range .Page.Params.extra_js }}
-  {{ $integrity := .integrity }}
-  {{ $async := .async }}
-  <script src="{{ .src }}"{{ with $integrity }} integrity="{{ $integrity }}"{{ end }}{{ with $async }} async{{ end }} crossorigin="anonymous"></script>
+  <script{{ with .async }} async{{ end }} src="{{ .src }}"{{ with .integrity }} integrity="{{ . }}"{{ end }} crossorigin="anonymous"></script>
 {{- end }}
