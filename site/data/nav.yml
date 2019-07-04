@@ -40,7 +40,6 @@
     - title: Dropdowns
     - title: Forms
     - title: Input group
-    - title: Jumbotron
     - title: List group
     - title: Modal
     - title: Navs
@@ -53,22 +52,28 @@
     - title: Toasts
     - title: Tooltips
 
+- title: Helpers
+  pages:
+    - title: Clearfix
+    - title: Embed
+    - title: Position
+    - title: Screen readers
+    - title: Stretched link
+    - title: Text truncation
+
 - title: Utilities
   pages:
+    - title: API
     - title: Borders
-    - title: Clearfix
     - title: Colors
     - title: Display
-    - title: Embed
     - title: Flex
     - title: Float
     - title: Overflow
     - title: Position
-    - title: Screen readers
     - title: Shadows
     - title: Sizing
     - title: Spacing
-    - title: Stretched link
     - title: Text
     - title: Vertical align
     - title: Visibility
