@@ -4,8 +4,8 @@
   * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
   */
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('../dom/data.js'), require('../dom/event-handler.js'), require('../dom/selector-engine.js')) :
-  typeof define === 'function' && define.amd ? define(['../dom/data.js', '../dom/event-handler.js', '../dom/selector-engine.js'], factory) :
+  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('./dom/data.js'), require('./dom/event-handler.js'), require('./dom/selector-engine.js')) :
+  typeof define === 'function' && define.amd ? define(['./dom/data.js', './dom/event-handler.js', './dom/selector-engine.js'], factory) :
   (global = global || self, global.Alert = factory(global.Data, global.EventHandler, global.SelectorEngine));
 }(this, function (Data, EventHandler, SelectorEngine) { 'use strict';
 
@@ -36,22 +36,23 @@
    * --------------------------------------------------------------------------
    */
   var MILLISECONDS_MULTIPLIER = 1000;
-  var TRANSITION_END = 'transitionend'; // Shoutout AngusCroll (https://goo.gl/pxwQGp)
+  var TRANSITION_END = 'transitionend';
+  var _window = window,
+      jQuery = _window.jQuery; // Shoutout AngusCroll (https://goo.gl/pxwQGp)
 
-  var getSelector = function getSelector(element) {
+  var getSelectorFromElement = function getSelectorFromElement(element) {
     var selector = element.getAttribute('data-target');
 
     if (!selector || selector === '#') {
       var hrefAttr = element.getAttribute('href');
-      selector = hrefAttr && hrefAttr !== '#' ? hrefAttr.trim() : null;
+      selector = hrefAttr && hrefAttr !== '#' ? hrefAttr.trim() : '';
     }
 
-    return selector;
-  };
-
-  var getElementFromSelector = function getElementFromSelector(element) {
-    var selector = getSelector(element);
-    return selector ? document.querySelector(selector) : null;
+    try {
+      return document.querySelector(selector) ? selector : null;
+    } catch (error) {
+      return null;
+    }
   };
 
   var getTransitionDurationFromElement = function getTransitionDurationFromElement(element) {
@@ -99,17 +100,6 @@
         triggerTransitionEnd(element);
       }
     }, emulatedDuration);
-  };
-
-  var getjQuery = function getjQuery() {
-    var _window = window,
-        jQuery = _window.jQuery;
-
-    if (jQuery && !document.body.hasAttribute('data-no-jquery')) {
-      return jQuery;
-    }
-
-    return null;
   };
 
   /**
@@ -181,7 +171,12 @@
     ;
 
     _proto._getRootElement = function _getRootElement(element) {
-      var parent = getElementFromSelector(element);
+      var selector = getSelectorFromElement(element);
+      var parent = false;
+
+      if (selector) {
+        parent = SelectorEngine.findOne(selector);
+      }
 
       if (!parent) {
         parent = SelectorEngine.closest(element, "." + ClassName.ALERT);
@@ -206,8 +201,8 @@
       }
 
       var transitionDuration = getTransitionDurationFromElement(element);
-      EventHandler.one(element, TRANSITION_END, function () {
-        return _this._destroyElement(element);
+      EventHandler.one(element, TRANSITION_END, function (event) {
+        return _this._destroyElement(element, event);
       });
       emulateTransitionEnd(element, transitionDuration);
     };
@@ -221,7 +216,7 @@
     } // Static
     ;
 
-    Alert.jQueryInterface = function jQueryInterface(config) {
+    Alert._jQueryInterface = function _jQueryInterface(config) {
       return this.each(function () {
         var data = Data.getData(this, DATA_KEY);
 
@@ -235,7 +230,7 @@
       });
     };
 
-    Alert.handleDismiss = function handleDismiss(alertInstance) {
+    Alert._handleDismiss = function _handleDismiss(alertInstance) {
       return function (event) {
         if (event) {
           event.preventDefault();
@@ -245,7 +240,7 @@
       };
     };
 
-    Alert.getInstance = function getInstance(element) {
+    Alert._getInstance = function _getInstance(element) {
       return Data.getData(element, DATA_KEY);
     };
 
@@ -265,8 +260,7 @@
    */
 
 
-  EventHandler.on(document, Event.CLICK_DATA_API, Selector.DISMISS, Alert.handleDismiss(new Alert()));
-  var $ = getjQuery();
+  EventHandler.on(document, Event.CLICK_DATA_API, Selector.DISMISS, Alert._handleDismiss(new Alert()));
   /**
    * ------------------------------------------------------------------------
    * jQuery
@@ -274,16 +268,14 @@
    * add .alert to jQuery only if jQuery is present
    */
 
-  /* istanbul ignore if */
+  if (typeof jQuery !== 'undefined') {
+    var JQUERY_NO_CONFLICT = jQuery.fn[NAME];
+    jQuery.fn[NAME] = Alert._jQueryInterface;
+    jQuery.fn[NAME].Constructor = Alert;
 
-  if ($) {
-    var JQUERY_NO_CONFLICT = $.fn[NAME];
-    $.fn[NAME] = Alert.jQueryInterface;
-    $.fn[NAME].Constructor = Alert;
-
-    $.fn[NAME].noConflict = function () {
-      $.fn[NAME] = JQUERY_NO_CONFLICT;
-      return Alert.jQueryInterface;
+    jQuery.fn[NAME].noConflict = function () {
+      jQuery.fn[NAME] = JQUERY_NO_CONFLICT;
+      return Alert._jQueryInterface;
     };
   }
 

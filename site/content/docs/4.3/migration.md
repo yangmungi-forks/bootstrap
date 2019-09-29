@@ -23,10 +23,9 @@ See the browser and devices page for details on what is currently supported in B
 Changes to our source Sass files and compiled CSS.
 
 - Removed `hover`, `hover-focus`, `plain-hover-focus`, and `hover-focus-active` mixins. Use regular CSS syntax for these moving forward. [See #28267](https://github.com/twbs/bootstrap/pull/28267).
-- Remove previously deprecated mixins
+- **Todo:** Remove previously deprecated mixins
   - `float()`
   - `form-control-mixin()`
-  - `nav-divider()`
   - `retina-img()`
   - `text-hide()` (also dropped the associated utility class, `.text-hide`)
   - `visibility()`
@@ -34,16 +33,12 @@ Changes to our source Sass files and compiled CSS.
 - **Todo:** Rearrange forms source files (under `scss/forms/`)
 - **Todo:** Rearrange grid source files (under `scss/grid/`)
 - Removed print styles and `$enable-print-styles` variable. Print display classes, however, have remained intact. [See #28339](https://github.com/twbs/bootstrap/pull/28339).
-- Dropped `color()`, `theme-color()` & `gray()` functions in favor of variables. [See #29083](https://github.com/twbs/bootstrap/pull/29083)
-- The `theme-color-level()` function is renamed to `color-level()` and now accepts any color you want instead of only `$theme-color` colors. [See #29083](https://github.com/twbs/bootstrap/pull/29083)
-- Line heights are dropped from several components to simplify our codebase. The `button-size()` and `pagination-size()` do not accept line height parameters anymore. [See #29271](https://github.com/twbs/bootstrap/pull/29271)
 
 ## JavaScript
 
 Changes to our source and compiled JavaScript files.
 
 - Dropped jQuery dependency and rewrote plugins to be in regular JavaScript.
-- Removed underscore from public static methods like `_getInstance()` → `getInstance()`.
 
 ## Grid and layout
 
@@ -58,33 +53,15 @@ Changes to any layout tools and our grid system.
 Changes to Reboot, typography, tables, and more.
 
 - **Todo:** Make RFS enabled by default
-- Reset default horizontal `padding-left` on `<ul>` and `<ol>` elements from browser default `40px` to `2rem`.
-- Simplified table styles (no more 2px border on `thead > th` elements) and tightened cell padding.
-- Dropped `.pre-scrollable` class. [See #29135](https://github.com/twbs/bootstrap/pull/29135)
-- `.text-*` utilities do not add hover and focus states to links anymore. `.link-*` helper classes can be used instead. [See #29267](https://github.com/twbs/bootstrap/pull/29267)
 
 ## Forms
 
-- Rearranged form documentation under its own top-level section.
-  - Split out old Forms page into several subpages
-  - Moved input groups docs under new Forms section
-- Rearranged source Sass files under `scss/forms/`, including moving over input group styles.
-- Combined native and custom checkboxes and radios into single `.form-check` class.
-  - New checks support sizing via `em`/`font-size` or explicit modifier classes now.
-  - New checks now appear larger by default for improved usability.
-  - Dropped `.custom-control` and associated classes.
-  - Renamed most `$custom-control` variables to `$form-control` ones.
-- Combined native and custom selects into `.form-select`.
-  - Dropped `.custom-select` and associated classes.
-  - Renamed most `$custom-select` variables to `$form-select` ones.
-- Updated file input component with same overall design, but improved HTML.
-  - Refactored `.form-file` markup to resolve some visual bugs while allowing translation and button text changes via HTML instead of CSS.
-  - Dropped native `.form-control-file` and `.form-control-range` components entirely.
-  - Renamed `.custom-file` to `.form-file` (including variables).
-  - Added support for `:focus` and `:disabled` styles.
-- Renamed `.custom-range` to `.form-range` (including variables).
-- Dropped `.form-group` for margin utilities (we've replaced our docs examples with `.mb-3`).
-- Dropped support for `.form-control-plaintext` inside `.input-group`s.
+- **Todo:** Move forms documentation to it's own top-level section
+- **Todo:** Rearrange source Sass files (under `scss/forms/`)
+- **Todo:** Combine native and custom checkboxes and radios
+- **Todo:** Rewrite checks to support sizing (via `em`/`font-size` or explicit modifier classes)
+- **Todo:** Combine native and custom selects
+- **Todo:** Combine native and custom file and range inputs
 
 ## Components
 
@@ -100,22 +77,9 @@ Badges were overhauled to better differentiate themselves from buttons and to be
 - **Todo:** Removed `.badge-pill` for the `.rounded-pill` utility class
 - **Todo:** Removed badge's hover and focus styles for `a.badge` and `button.badge`.
 
-### Cards
-
-- Removed the card columns in favor of a Masonry grid [See #28922](https://github.com/twbs/bootstrap/pull/28922).
-
-### Icons (New!)
-
-- Added new Bootstrap icons to the project for our documentation, form controls, and more.
-- Removed Open Iconic icons from project source code for form controls.
-
 ### Jumbotron
 
 - The jumbotron component is removed in favor of utility classes like `.bg-light` for the background color and `.p-*` classes to control padding.
-
-### Pagination
-
-- Pagination links now have customizable `margin-left` that are dynamically rounded on all corners when separated from one another.
 
 ### Popovers
 
@@ -133,12 +97,7 @@ Badges were overhauled to better differentiate themselves from buttons and to be
 
 - Renamed `.text-monospace` to `.font-monospace`
 - Decreased the number of responsive order utilities per breakpoint. The highest order utility with a number now is `.order-5` instead of `.order-12`. [See #28874](https://github.com/twbs/bootstrap/pull/28874).
-- New `line-height` utilities: `.lh-1`, `.lh-sm`, `.lh-base` and `.lh-lg`. See [here]({{< docsref "/utilities/text#line-height" >}}).
 - **Todo:** Drop `.text-hide` as it's an antiquated method for hiding text that shouldn't be used anymore
 - **Todo:** Split utilities into property-value utility classes and helpers
-
-## Docs
-
--  Removed "Wall of browser bugs" page because it has become obsolete
 
 ## Build tools

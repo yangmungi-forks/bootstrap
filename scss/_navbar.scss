@@ -25,22 +25,12 @@
 
   // Because flex properties aren't inherited, we need to redeclare these first
   // few properties so that content nested within behave properly.
-  %container-flex-properties {
+  > .container,
+  > .container-fluid {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-  }
-
-  .container,
-  .container-fluid {
-    @extend %container-flex-properties;
-  }
-
-  @each $breakpoint, $container-max-width in $container-max-widths {
-    > .container#{breakpoint-infix($breakpoint, $container-max-widths)} {
-      @extend %container-flex-properties;
-    }
   }
 }
 
@@ -150,20 +140,10 @@
 
     &#{$infix} {
       @include media-breakpoint-down($breakpoint) {
-        %container-navbar-expand-#{$breakpoint} {
-          padding-right: 0;
-          padding-left: 0;
-        }
-
         > .container,
         > .container-fluid {
-          @extend %container-navbar-expand-#{$breakpoint};
-        }
-
-        @each $size, $container-max-width in $container-max-widths {
-          > .container#{breakpoint-infix($size, $container-max-widths)} {
-            @extend %container-navbar-expand-#{$breakpoint};
-          }
+          padding-right: 0;
+          padding-left: 0;
         }
       }
 
@@ -185,19 +165,9 @@
         }
 
         // For nesting containers, have to redeclare for alignment purposes
-        %container-nesting-#{$breakpoint} {
-          flex-wrap: nowrap;
-        }
-
         > .container,
         > .container-fluid {
-          @extend %container-nesting-#{$breakpoint};
-        }
-
-        @each $size, $container-max-width in $container-max-widths {
-          > .container#{breakpoint-infix($size, $container-max-widths)} {
-            @extend %container-nesting-#{$breakpoint};
-          }
+          flex-wrap: nowrap;
         }
 
         .navbar-collapse {
@@ -259,7 +229,7 @@
   }
 
   .navbar-toggler-icon {
-    background-image: escape-svg($navbar-light-toggler-icon-bg);
+    background-image: $navbar-light-toggler-icon-bg;
   }
 
   .navbar-text {
@@ -312,7 +282,7 @@
   }
 
   .navbar-toggler-icon {
-    background-image: escape-svg($navbar-dark-toggler-icon-bg);
+    background-image: $navbar-dark-toggler-icon-bg;
   }
 
   .navbar-text {

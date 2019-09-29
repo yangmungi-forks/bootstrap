@@ -10,37 +10,59 @@ toc: true
 
 Images in Bootstrap are made responsive with `.img-fluid`. `max-width: 100%;` and `height: auto;` are applied to the image so that it scales with the parent element.
 
-{{< example >}}
-{{< placeholder width="100%" height="250" class="bd-placeholder-img-lg img-fluid" text="Responsive image" >}}
-{{< /example >}}
+<div class="bd-example">
+  {{< placeholder width="100%" height="250" class="bd-placeholder-img-lg img-fluid" text="Responsive image" >}}
+</div>
+
+{{< highlight html >}}
+<img src="..." class="img-fluid" alt="Responsive image">
+{{< /highlight >}}
 
 ## Image thumbnails
 
 In addition to our [border-radius utilities]({{< docsref "/utilities/borders" >}}), you can use `.img-thumbnail` to give an image a rounded 1px border appearance.
 
-{{< example >}}
-{{< placeholder width="200" height="200" class="img-thumbnail" title="A generic square placeholder image with a white border around it, making it resemble a photograph taken with an old instant camera" >}}
-{{< /example >}}
+<div class="bd-example bd-example-images">
+  {{< placeholder width="200" height="200" class="img-thumbnail" title="A generic square placeholder image with a white border around it, making it resemble a photograph taken with an old instant camera" >}}
+</div>
+
+{{< highlight html >}}
+<img src="..." alt="..." class="img-thumbnail">
+{{< /highlight >}}
 
 ## Aligning images
 
 Align images with the [helper float classes]({{< docsref "/utilities/float" >}}) or [text alignment classes]({{< docsref "/utilities/text#text-alignment" >}}). `block`-level images can be centered using [the `.mx-auto` margin utility class]({{< docsref "/utilities/spacing#horizontal-centering" >}}).
 
-{{< example >}}
-{{< placeholder width="200" height="200" class="rounded float-left" >}}
-{{< placeholder width="200" height="200" class="rounded float-right" >}}
-{{< /example >}}
-
-
-{{< example >}}
-{{< placeholder width="200" height="200" class="rounded mx-auto d-block" >}}
-{{< /example >}}
-
-{{< example >}}
-<div class="text-center">
-  {{< placeholder width="200" height="200" class="rounded" >}}
+<div class="bd-example bd-example-images">
+  {{< placeholder width="200" height="200" class="rounded float-left" >}}
+  {{< placeholder width="200" height="200" class="rounded float-right" >}}
 </div>
-{{< /example >}}
+
+{{< highlight html >}}
+<img src="..." class="rounded float-left" alt="...">
+<img src="..." class="rounded float-right" alt="...">
+{{< /highlight >}}
+
+<div class="bd-example bd-example-images">
+  {{< placeholder width="200" height="200" class="rounded mx-auto d-block" >}}
+</div>
+
+{{< highlight html >}}
+<img src="..." class="rounded mx-auto d-block" alt="...">
+{{< /highlight >}}
+
+<div class="bd-example bd-example-images">
+  <div class="text-center">
+    {{< placeholder width="200" height="200" class="rounded" >}}
+  </div>
+</div>
+
+{{< highlight html >}}
+<div class="text-center">
+  <img src="..." class="rounded" alt="...">
+</div>
+{{< /highlight >}}
 
 
 ## Picture

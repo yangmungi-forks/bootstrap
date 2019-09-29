@@ -50,7 +50,7 @@
       $result: map-merge($result, ($key: $value));
     }
   }
-  @return $result;
+  @return $map;
 }
 
 // Replace `$search` with `$replace` in `$string`
@@ -71,17 +71,6 @@
   @return $string;
 }
 
-// See https://codepen.io/kevinweber/pen/dXWoRw
-@function escape-svg($string) {
-  @if str-index($string, "data:image/svg+xml") {
-    @each $char, $encoded in $escaped-characters {
-      $string: str-replace($string, $char, $encoded);
-    }
-  }
-
-  @return $string;
-}
-
 // Color contrast
 @function color-yiq($color, $dark: $yiq-text-dark, $light: $yiq-text-light) {
   $r: red($color);
@@ -93,8 +82,22 @@
   @return if($yiq >= $yiq-contrasted-threshold, $dark, $light);
 }
 
-// Request a color level
-@function color-level($color: $primary, $level: 0) {
+// Retrieve color Sass maps
+@function color($key: "blue") {
+  @return map-get($colors, $key);
+}
+
+@function theme-color($key: "primary") {
+  @return map-get($theme-colors, $key);
+}
+
+@function gray($key: "100") {
+  @return map-get($grays, $key);
+}
+
+// Request a theme color level
+@function theme-color-level($color-name: "primary", $level: 0) {
+  $color: theme-color($color-name);
   $color-base: if($level > 0, $black, $white);
   $level: abs($level);
 

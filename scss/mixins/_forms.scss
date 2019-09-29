@@ -63,20 +63,13 @@
     @include border-radius($form-feedback-tooltip-border-radius);
   }
 
-  @include form-validation-state-selector($state) {
-    ~ .#{$state}-feedback,
-    ~ .#{$state}-tooltip {
-      display: block;
-    }
-  }
-
   .form-control {
     @include form-validation-state-selector($state) {
       border-color: $color;
 
       @if $enable-validation-icons {
         padding-right: $input-height-inner;
-        background-image: escape-svg($icon);
+        background-image: $icon;
         background-repeat: no-repeat;
         background-position: right $input-height-inner-quarter center;
         background-size: $input-height-inner-half $input-height-inner-half;
@@ -85,6 +78,11 @@
       &:focus {
         border-color: $color;
         box-shadow: 0 0 0 $input-focus-width rgba($color, .25);
+      }
+
+      ~ .#{$state}-feedback,
+      ~ .#{$state}-tooltip {
+        display: block;
       }
     }
   }
@@ -99,54 +97,98 @@
     }
   }
 
-  .form-select {
+  .custom-select {
     @include form-validation-state-selector($state) {
       border-color: $color;
 
       @if $enable-validation-icons {
-        padding-right: $form-select-feedback-icon-padding-right;
-        background: escape-svg($form-select-indicator) $form-select-background, escape-svg($icon) $form-select-bg no-repeat $form-select-feedback-icon-position / $form-select-feedback-icon-size;
+        padding-right: $custom-select-feedback-icon-padding-right;
+        background: $custom-select-background, $icon $custom-select-bg no-repeat $custom-select-feedback-icon-position / $custom-select-feedback-icon-size;
       }
 
       &:focus {
         border-color: $color;
         box-shadow: 0 0 0 $input-focus-width rgba($color, .25);
+      }
+
+      ~ .#{$state}-feedback,
+      ~ .#{$state}-tooltip {
+        display: block;
+      }
+    }
+  }
+
+
+  .form-control-file {
+    @include form-validation-state-selector($state) {
+      ~ .#{$state}-feedback,
+      ~ .#{$state}-tooltip {
+        display: block;
       }
     }
   }
 
   .form-check-input {
     @include form-validation-state-selector($state) {
-      border-color: $color;
-
-      &:checked {
-        @include gradient-bg(lighten($color, 10%));
-      }
-
-      &:focus {
-        box-shadow: 0 0 0 $input-focus-width rgba($color, .25);
-      }
-
       ~ .form-check-label {
         color: $color;
       }
+
+      ~ .#{$state}-feedback,
+      ~ .#{$state}-tooltip {
+        display: block;
+      }
     }
   }
-  .form-check-inline .form-check-input {
-    ~ .#{$state}-feedback {
-      margin-left: .5em;
+
+  .custom-control-input {
+    @include form-validation-state-selector($state) {
+      ~ .custom-control-label {
+        color: $color;
+
+        &::before {
+          border-color: $color;
+        }
+      }
+
+      ~ .#{$state}-feedback,
+      ~ .#{$state}-tooltip {
+        display: block;
+      }
+
+      &:checked {
+        ~ .custom-control-label::before {
+          border-color: lighten($color, 10%);
+          @include gradient-bg(lighten($color, 10%));
+        }
+      }
+
+      &:focus {
+        ~ .custom-control-label::before {
+          box-shadow: 0 0 0 $input-focus-width rgba($color, .25);
+        }
+
+        &:not(:checked) ~ .custom-control-label::before {
+          border-color: $color;
+        }
+      }
     }
   }
 
   // custom file
-  .form-file-input {
+  .custom-file-input {
     @include form-validation-state-selector($state) {
-      ~ .form-file-label {
+      ~ .custom-file-label {
         border-color: $color;
       }
 
+      ~ .#{$state}-feedback,
+      ~ .#{$state}-tooltip {
+        display: block;
+      }
+
       &:focus {
-        ~ .form-file-label {
+        ~ .custom-file-label {
           border-color: $color;
           box-shadow: 0 0 0 $input-focus-width rgba($color, .25);
         }

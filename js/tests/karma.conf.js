@@ -1,25 +1,28 @@
 /* eslint-env node */
+/* eslint no-process-env: 0 */
+
 const path = require('path')
 const ip = require('ip')
-const babel = require('rollup-plugin-babel')
-const istanbul = require('rollup-plugin-istanbul')
-const resolve = require('rollup-plugin-node-resolve')
-
 const {
   browsers,
   browsersKeys
 } = require('./browsers')
 
 const { env } = process
+const bundle = env.BUNDLE === 'true'
 const browserStack = env.BROWSER === 'true'
 const debug = env.DEBUG === 'true'
+
+const jqueryFile = 'node_modules/jquery/dist/jquery.slim.min.js'
+
 const frameworks = [
-  'jasmine'
+  'qunit',
+  'sinon'
 ]
 
 const plugins = [
-  'karma-jasmine',
-  'karma-rollup-preprocessor'
+  'karma-qunit',
+  'karma-sinon'
 ]
 
 const reporters = ['dots']
@@ -46,36 +49,8 @@ const customLaunchers = {
   }
 }
 
-const rollupPreprocessor = {
-  plugins: [
-    istanbul({
-      exclude: ['js/src/**/*.spec.js']
-    }),
-    babel({
-      // Only transpile our source code
-      exclude: 'node_modules/**',
-      // Include only required helpers
-      externalHelpersWhitelist: [
-        'defineProperties',
-        'createClass',
-        'inheritsLoose',
-        'defineProperty',
-        'objectSpread2'
-      ],
-      plugins: [
-        '@babel/plugin-proposal-object-rest-spread'
-      ]
-    }),
-    resolve()
-  ],
-  output: {
-    format: 'iife',
-    name: 'bootstrapTest',
-    sourcemap: 'inline'
-  }
-}
-
 let files = [
+  'node_modules/popper.js/dist/umd/popper.min.js',
   'node_modules/hammer-simulator/index.js'
 ]
 
@@ -87,11 +62,28 @@ const conf = {
   singleRun: true,
   concurrency: Infinity,
   client: {
-    clearContext: false
+    qunit: {
+      showUI: true
+    }
   }
 }
 
-if (browserStack) {
+if (bundle) {
+  frameworks.push('detectBrowsers')
+  plugins.push(
+    'karma-chrome-launcher',
+    'karma-firefox-launcher',
+    'karma-detect-browsers'
+  )
+  conf.customLaunchers = customLaunchers
+  conf.detectBrowsers = detectBrowsers
+  files = files.concat([
+    jqueryFile,
+    'js/tests/unit/tests-polyfills.js',
+    'dist/js/bootstrap.js',
+    'js/tests/unit/!(tests-polyfills).js'
+  ])
+} else if (browserStack) {
   conf.hostname = ip.address()
   conf.browserStack = {
     username: env.BROWSER_STACK_USERNAME,
@@ -100,17 +92,27 @@ if (browserStack) {
     project: 'Bootstrap',
     retryLimit: 2
   }
-  plugins.push('karma-browserstack-launcher', 'karma-jasmine-html-reporter')
+  plugins.push('karma-browserstack-launcher')
   conf.customLaunchers = browsers
   conf.browsers = browsersKeys
-  reporters.push('BrowserStack', 'kjhtml')
+  reporters.push('BrowserStack')
   files = files.concat([
-    { pattern: 'js/src/**/*.spec.js', watched: false }
+    jqueryFile,
+    'js/tests/unit/tests-polyfills.js',
+    'js/coverage/dist/util/index.js',
+    'js/coverage/dist/util/sanitizer.js',
+    'js/coverage/dist/dom/polyfill.js',
+    'js/coverage/dist/dom/event-handler.js',
+    'js/coverage/dist/dom/selector-engine.js',
+    'js/coverage/dist/dom/data.js',
+    'js/coverage/dist/dom/manipulator.js',
+    'js/coverage/dist/dom/!(polyfill).js',
+    'js/coverage/dist/tooltip.js',
+    'js/coverage/dist/!(util|index|tooltip).js', // include all of our js/dist files except util.js, index.js and tooltip.js
+    'js/tests/unit/!(tests-polyfills).js',
+    'js/tests/unit/dom/*.js',
+    'js/tests/unit/util/*.js'
   ])
-  conf.preprocessors = {
-    'js/src/**/*.spec.js': ['rollup']
-  }
-  conf.rollupPreprocessor = rollupPreprocessor
 } else {
   frameworks.push('detectBrowsers')
   plugins.push(
@@ -120,13 +122,23 @@ if (browserStack) {
     'karma-coverage-istanbul-reporter'
   )
   files = files.concat([
-    { pattern: 'js/src/**/*.spec.js', watched: true }
+    jqueryFile,
+    'js/tests/unit/tests-polyfills.js',
+    'js/coverage/dist/util/index.js',
+    'js/coverage/dist/util/sanitizer.js',
+    'js/coverage/dist/dom/polyfill.js',
+    'js/coverage/dist/dom/event-handler.js',
+    'js/coverage/dist/dom/selector-engine.js',
+    'js/coverage/dist/dom/data.js',
+    'js/coverage/dist/dom/manipulator.js',
+    'js/coverage/dist/dom/!(polyfill).js',
+    'js/coverage/dist/tooltip.js',
+    'js/coverage/dist/!(util|index|tooltip).js', // include all of our js/dist files except util.js, index.js and tooltip.js
+    'js/tests/unit/!(tests-polyfills).js',
+    'js/tests/unit/dom/*.js',
+    'js/tests/unit/util/*.js'
   ])
   reporters.push('coverage-istanbul')
-  conf.preprocessors = {
-    'js/src/**/*.spec.js': ['rollup']
-  }
-  conf.rollupPreprocessor = rollupPreprocessor
   conf.customLaunchers = customLaunchers
   conf.detectBrowsers = detectBrowsers
   conf.coverageIstanbulReporter = {
@@ -136,8 +148,8 @@ if (browserStack) {
       emitWarning: false,
       global: {
         statements: 90,
-        branches: 90,
-        functions: 90,
+        branches: 86,
+        functions: 89,
         lines: 90
       },
       each: {
@@ -154,9 +166,6 @@ if (browserStack) {
   }
 
   if (debug) {
-    conf.hostname = ip.address()
-    plugins.push('karma-jasmine-html-reporter')
-    reporters.push('kjhtml')
     conf.singleRun = false
     conf.autoWatch = true
   }

@@ -28,7 +28,7 @@ We provide a version of Bootstrap built as `ESM` (`bootstrap.esm.js` and `bootst
 {{< callout warning >}}
 ## Incompatible plugins
 
-Due to browser limitations, some of our plugins, namely Dropdown, Tooltip and Popover plugins, cannot be used in a `<script>` tag with `module` type because they depend on Popper.js. For more information about the issue see [here](https://v8.dev/features/modules#specifiers).
+Due to browser limitations, some of our plugins, namely Dropdown, Tooltip and Popover plugins, cannot be used in a `<script>` tag with `module` type because they depend on Popper.js. For more information about the issue see [here](https://developers.google.com/web/fundamentals/primers/modules#specifiers).
 {{< /callout >}}
 
 ## Dependencies
@@ -36,10 +36,6 @@ Due to browser limitations, some of our plugins, namely Dropdown, Tooltip and Po
 Some plugins and CSS components depend on other plugins. If you include plugins individually, make sure to check for these dependencies in the docs.
 
 Our dropdowns, popovers and tooltips also depend on [Popper.js](https://popper.js.org/).
-
-## Still want to use jQuery? It's possible!
-
-Bootstrap 5 is designed to be used without jQuery, but it's still possible to use our components with jQuery. **If Bootstrap detects `jQuery` in the `window` object** it'll add all of our components in jQuery's plugin system; this means you'll be able to do `$('[data-toggle="tooltip"]').tooltip()` to enable tooltips. The same goes for our other components.
 
 ## Data attributes
 
@@ -68,18 +64,6 @@ myModal.addEventListener('show.bs.modal', function (e) {
 })
 {{< /highlight >}}
 
-{{< callout warning >}}
-## jQuery events
-
-Bootstrap will detect jQuery if `jQuery` is present in the `window` object and there is no `data-no-jquery` attribute set on `<body>`. If jQuery is found, Bootstrap will emit events thanks to jQuery's event system. So if you want to listen to Bootstrap's events, you'll have to use the jQuery methods (`.on`, `.one`) instead of `addEventListener`.
-
-{{< highlight js >}}
-$('#myTab a').on('shown.bs.tab', function () {
-  // do something...
-})
-{{< /highlight >}}
-{{< /callout >}}
-
 ## Programmatic API
 
 All constructors accept an optional options object or nothing (which initiates a plugin with its default behavior):
@@ -91,7 +75,7 @@ var modal = new bootstrap.Modal(myModalEl) // initialized with defaults
 var modal = new bootstrap.Modal(myModalEl, { keyboard: false }) // initialized with no keyboard
 {{< /highlight >}}
 
-If you'd like to get a particular plugin instance, each plugin exposes a `getInstance` method. In order to retrieve it directly from an element, do this: `bootstrap.Popover.getInstance(myPopoverEl)`.
+If you'd like to get a particular plugin instance, each plugin exposes a `_getInstance` method. In order to retrieve it directly from an element, do this: `bootstrap.Popover._getInstance(myPopoverEl)`.
 
 ### Asynchronous functions and transitions
 
@@ -111,7 +95,7 @@ In addition a method call on a **transitioning component will be ignored**.
 
 {{< highlight js >}}
 var myCarouselEl = document.getElementById('myCarousel')
-var carousel = bootstrap.Carousel.getInstance(myCarouselEl) // Retrieve a Carousel instance
+var carousel = bootstrap.Carousel._getInstance(myCarouselEl) // Retrieve a Carousel instance
 
 myCarouselEl.addEventListener('slid.bs.carousel', function (e) {
   carousel.to('2') // Will slide to the slide 2 as soon as the transition to slide 1 is finished

@@ -90,7 +90,6 @@ function main(args) {
   const newVersion = args[1]
   const EXCLUDED_DIRS = new Set([
     '.git',
-    '_gh_pages',
     'node_modules',
     'vendor'
   ])

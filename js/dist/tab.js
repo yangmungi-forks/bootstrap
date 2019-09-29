@@ -4,8 +4,8 @@
   * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
   */
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('../dom/data.js'), require('../dom/event-handler.js'), require('../dom/selector-engine.js')) :
-  typeof define === 'function' && define.amd ? define(['../dom/data.js', '../dom/event-handler.js', '../dom/selector-engine.js'], factory) :
+  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('./dom/data.js'), require('./dom/event-handler.js'), require('./dom/selector-engine.js')) :
+  typeof define === 'function' && define.amd ? define(['./dom/data.js', './dom/event-handler.js', './dom/selector-engine.js'], factory) :
   (global = global || self, global.Tab = factory(global.Data, global.EventHandler, global.SelectorEngine));
 }(this, function (Data, EventHandler, SelectorEngine) { 'use strict';
 
@@ -36,22 +36,23 @@
    * --------------------------------------------------------------------------
    */
   var MILLISECONDS_MULTIPLIER = 1000;
-  var TRANSITION_END = 'transitionend'; // Shoutout AngusCroll (https://goo.gl/pxwQGp)
+  var TRANSITION_END = 'transitionend';
+  var _window = window,
+      jQuery = _window.jQuery; // Shoutout AngusCroll (https://goo.gl/pxwQGp)
 
-  var getSelector = function getSelector(element) {
+  var getSelectorFromElement = function getSelectorFromElement(element) {
     var selector = element.getAttribute('data-target');
 
     if (!selector || selector === '#') {
       var hrefAttr = element.getAttribute('href');
-      selector = hrefAttr && hrefAttr !== '#' ? hrefAttr.trim() : null;
+      selector = hrefAttr && hrefAttr !== '#' ? hrefAttr.trim() : '';
     }
 
-    return selector;
-  };
-
-  var getElementFromSelector = function getElementFromSelector(element) {
-    var selector = getSelector(element);
-    return selector ? document.querySelector(selector) : null;
+    try {
+      return document.querySelector(selector) ? selector : null;
+    } catch (error) {
+      return null;
+    }
   };
 
   var getTransitionDurationFromElement = function getTransitionDurationFromElement(element) {
@@ -111,17 +112,6 @@
 
   var reflow = function reflow(element) {
     return element.offsetHeight;
-  };
-
-  var getjQuery = function getjQuery() {
-    var _window = window,
-        jQuery = _window.jQuery;
-
-    if (jQuery && !document.body.hasAttribute('data-no-jquery')) {
-      return jQuery;
-    }
-
-    return null;
   };
 
   /**
@@ -184,9 +174,10 @@
         return;
       }
 
+      var target;
       var previous;
-      var target = getElementFromSelector(this._element);
       var listElement = SelectorEngine.closest(this._element, Selector.NAV_LIST_GROUP);
+      var selector = getSelectorFromElement(this._element);
 
       if (listElement) {
         var itemSelector = listElement.nodeName === 'UL' || listElement.nodeName === 'OL' ? Selector.ACTIVE_UL : Selector.ACTIVE;
@@ -208,6 +199,10 @@
 
       if (showEvent.defaultPrevented || hideEvent !== null && hideEvent.defaultPrevented) {
         return;
+      }
+
+      if (selector) {
+        target = SelectorEngine.findOne(selector);
       }
 
       this._activate(this._element, listElement);
@@ -299,7 +294,7 @@
     } // Static
     ;
 
-    Tab.jQueryInterface = function jQueryInterface(config) {
+    Tab._jQueryInterface = function _jQueryInterface(config) {
       return this.each(function () {
         var data = Data.getData(this, DATA_KEY) || new Tab(this);
 
@@ -313,7 +308,7 @@
       });
     };
 
-    Tab.getInstance = function getInstance(element) {
+    Tab._getInstance = function _getInstance(element) {
       return Data.getData(element, DATA_KEY);
     };
 
@@ -338,7 +333,6 @@
     var data = Data.getData(this, DATA_KEY) || new Tab(this);
     data.show();
   });
-  var $ = getjQuery();
   /**
    * ------------------------------------------------------------------------
    * jQuery
@@ -346,16 +340,14 @@
    * add .tab to jQuery only if jQuery is present
    */
 
-  /* istanbul ignore if */
+  if (typeof jQuery !== 'undefined') {
+    var JQUERY_NO_CONFLICT = jQuery.fn[NAME];
+    jQuery.fn[NAME] = Tab._jQueryInterface;
+    jQuery.fn[NAME].Constructor = Tab;
 
-  if ($) {
-    var JQUERY_NO_CONFLICT = $.fn[NAME];
-    $.fn[NAME] = Tab.jQueryInterface;
-    $.fn[NAME].Constructor = Tab;
-
-    $.fn[NAME].noConflict = function () {
-      $.fn[NAME] = JQUERY_NO_CONFLICT;
-      return Tab.jQueryInterface;
+    jQuery.fn[NAME].noConflict = function () {
+      jQuery.fn[NAME] = JQUERY_NO_CONFLICT;
+      return Tab._jQueryInterface;
     };
   }
 

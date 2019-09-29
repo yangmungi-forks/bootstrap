@@ -4,8 +4,8 @@
   * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
   */
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('../dom/data.js'), require('../dom/event-handler.js'), require('../dom/manipulator.js')) :
-  typeof define === 'function' && define.amd ? define(['../dom/data.js', '../dom/event-handler.js', '../dom/manipulator.js'], factory) :
+  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('./dom/data.js'), require('./dom/event-handler.js'), require('./dom/manipulator.js')) :
+  typeof define === 'function' && define.amd ? define(['./dom/data.js', './dom/event-handler.js', './dom/manipulator.js'], factory) :
   (global = global || self, global.Toast = factory(global.Data, global.EventHandler, global.Manipulator));
 }(this, function (Data, EventHandler, Manipulator) { 'use strict';
 
@@ -44,35 +44,20 @@
     return obj;
   }
 
-  function ownKeys(object, enumerableOnly) {
-    var keys = Object.keys(object);
-
-    if (Object.getOwnPropertySymbols) {
-      var symbols = Object.getOwnPropertySymbols(object);
-      if (enumerableOnly) symbols = symbols.filter(function (sym) {
-        return Object.getOwnPropertyDescriptor(object, sym).enumerable;
-      });
-      keys.push.apply(keys, symbols);
-    }
-
-    return keys;
-  }
-
-  function _objectSpread2(target) {
+  function _objectSpread(target) {
     for (var i = 1; i < arguments.length; i++) {
       var source = arguments[i] != null ? arguments[i] : {};
+      var ownKeys = Object.keys(source);
 
-      if (i % 2) {
-        ownKeys(source, true).forEach(function (key) {
-          _defineProperty(target, key, source[key]);
-        });
-      } else if (Object.getOwnPropertyDescriptors) {
-        Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
-      } else {
-        ownKeys(source).forEach(function (key) {
-          Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
-        });
+      if (typeof Object.getOwnPropertySymbols === 'function') {
+        ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) {
+          return Object.getOwnPropertyDescriptor(source, sym).enumerable;
+        }));
       }
+
+      ownKeys.forEach(function (key) {
+        _defineProperty(target, key, source[key]);
+      });
     }
 
     return target;
@@ -85,7 +70,9 @@
    * --------------------------------------------------------------------------
    */
   var MILLISECONDS_MULTIPLIER = 1000;
-  var TRANSITION_END = 'transitionend'; // Shoutout AngusCroll (https://goo.gl/pxwQGp)
+  var TRANSITION_END = 'transitionend';
+  var _window = window,
+      jQuery = _window.jQuery; // Shoutout AngusCroll (https://goo.gl/pxwQGp)
 
   var toType = function toType(obj) {
     return {}.toString.call(obj).match(/\s([a-z]+)/i)[1].toLowerCase();
@@ -154,21 +141,6 @@
     });
   };
 
-  var reflow = function reflow(element) {
-    return element.offsetHeight;
-  };
-
-  var getjQuery = function getjQuery() {
-    var _window = window,
-        jQuery = _window.jQuery;
-
-    if (jQuery && !document.body.hasAttribute('data-no-jquery')) {
-      return jQuery;
-    }
-
-    return null;
-  };
-
   /**
    * ------------------------------------------------------------------------
    * Constants
@@ -232,11 +204,7 @@
     _proto.show = function show() {
       var _this = this;
 
-      var showEvent = EventHandler.trigger(this._element, Event.SHOW);
-
-      if (showEvent.defaultPrevented) {
-        return;
-      }
+      EventHandler.trigger(this._element, Event.SHOW);
 
       if (this._config.animation) {
         this._element.classList.add(ClassName.FADE);
@@ -258,8 +226,6 @@
 
       this._element.classList.remove(ClassName.HIDE);
 
-      reflow(this._element);
-
       this._element.classList.add(ClassName.SHOWING);
 
       if (this._config.animation) {
@@ -278,11 +244,7 @@
         return;
       }
 
-      var hideEvent = EventHandler.trigger(this._element, Event.HIDE);
-
-      if (hideEvent.defaultPrevented) {
-        return;
-      }
+      EventHandler.trigger(this._element, Event.HIDE);
 
       var complete = function complete() {
         _this2._element.classList.add(ClassName.HIDE);
@@ -317,7 +279,7 @@
     ;
 
     _proto._getConfig = function _getConfig(config) {
-      config = _objectSpread2({}, Default, {}, Manipulator.getDataAttributes(this._element), {}, typeof config === 'object' && config ? config : {});
+      config = _objectSpread({}, Default, Manipulator.getDataAttributes(this._element), typeof config === 'object' && config ? config : {});
       typeCheckConfig(NAME, config, this.constructor.DefaultType);
       return config;
     };
@@ -331,7 +293,7 @@
     } // Static
     ;
 
-    Toast.jQueryInterface = function jQueryInterface(config) {
+    Toast._jQueryInterface = function _jQueryInterface(config) {
       return this.each(function () {
         var data = Data.getData(this, DATA_KEY);
 
@@ -351,7 +313,7 @@
       });
     };
 
-    Toast.getInstance = function getInstance(element) {
+    Toast._getInstance = function _getInstance(element) {
       return Data.getData(element, DATA_KEY);
     };
 
@@ -374,8 +336,6 @@
 
     return Toast;
   }();
-
-  var $ = getjQuery();
   /**
    * ------------------------------------------------------------------------
    * jQuery
@@ -383,16 +343,15 @@
    *  add .toast to jQuery only if jQuery is present
    */
 
-  /* istanbul ignore if */
 
-  if ($) {
-    var JQUERY_NO_CONFLICT = $.fn[NAME];
-    $.fn[NAME] = Toast.jQueryInterface;
-    $.fn[NAME].Constructor = Toast;
+  if (typeof jQuery !== 'undefined') {
+    var JQUERY_NO_CONFLICT = jQuery.fn[NAME];
+    jQuery.fn[NAME] = Toast._jQueryInterface;
+    jQuery.fn[NAME].Constructor = Toast;
 
-    $.fn[NAME].noConflict = function () {
-      $.fn[NAME] = JQUERY_NO_CONFLICT;
-      return Toast.jQueryInterface;
+    jQuery.fn[NAME].noConflict = function () {
+      jQuery.fn[NAME] = JQUERY_NO_CONFLICT;
+      return Toast._jQueryInterface;
     };
   }
 

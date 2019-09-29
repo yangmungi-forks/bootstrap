@@ -65,6 +65,25 @@ h1, h2, h3, h4, h5, h6 {
   .h-md-250 { height: 250px; }
 }
 
+/*
+ * Blog name and description
+ */
+.blog-title {
+  margin-bottom: 0;
+  font-size: 2rem;
+  font-weight: 400;
+}
+.blog-description {
+  font-size: 1.1rem;
+  color: #999;
+}
+
+@media (min-width: 40em) {
+  .blog-title {
+    font-size: 3.5rem;
+  }
+}
+
 /* Pagination */
 .blog-pagination {
   margin-bottom: 4rem;
@@ -85,7 +104,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 .blog-post-meta {
   margin-bottom: 1.25rem;
-  color: #727272;
+  color: #999;
 }
 
 /*
@@ -93,7 +112,7 @@ h1, h2, h3, h4, h5, h6 {
  */
 .blog-footer {
   padding: 2.5rem 0;
-  color: #727272;
+  color: #999;
   text-align: center;
   background-color: #f9f9f9;
   border-top: .05rem solid #e5e5e5;

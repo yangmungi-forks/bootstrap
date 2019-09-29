@@ -523,11 +523,11 @@ Below is a live demo followed by example HTML and JavaScript. For more informati
       </div>
       <div class="modal-body">
         <form>
-          <div class="mb-3">
+          <div class="form-group">
             <label for="recipient-name" class="col-form-label">Recipient:</label>
             <input type="text" class="form-control" id="recipient-name">
           </div>
-          <div class="mb-3">
+          <div class="form-group">
             <label for="message-text" class="col-form-label">Message:</label>
             <textarea class="form-control" id="message-text"></textarea>
           </div>
@@ -590,7 +590,7 @@ Embedding YouTube videos in modals requires additional JavaScript not in Bootstr
 
 Modals have three optional sizes, available via modifier classes to be placed on a `.modal-dialog`. These sizes kick in at certain breakpoints to avoid horizontal scrollbars on narrower viewports.
 
-<table class="table">
+<table class="table table-bordered table-striped">
   <thead>
     <tr>
       <th>Size</th>
@@ -635,7 +635,7 @@ Our default modal without modifier class constitutes the "medium" size modal.
 <button type="button" class="btn btn-primary" data-toggle="modal" data-target=".bd-example-modal-xl">Extra large modal</button>
 
 <div class="modal fade bd-example-modal-xl" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-xl" role="document">
+  <div class="modal-dialog modal-xl">
     <div class="modal-content">
       ...
     </div>
@@ -646,7 +646,7 @@ Our default modal without modifier class constitutes the "medium" size modal.
 <button type="button" class="btn btn-primary" data-toggle="modal" data-target=".bd-example-modal-lg">Large modal</button>
 
 <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg" role="document">
+  <div class="modal-dialog modal-lg">
     <div class="modal-content">
       ...
     </div>
@@ -657,7 +657,7 @@ Our default modal without modifier class constitutes the "medium" size modal.
 <button type="button" class="btn btn-primary" data-toggle="modal" data-target=".bd-example-modal-sm">Small modal</button>
 
 <div class="modal fade bd-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-sm" role="document">
+  <div class="modal-dialog modal-sm">
     <div class="modal-content">
       ...
     </div>
@@ -666,7 +666,7 @@ Our default modal without modifier class constitutes the "medium" size modal.
 {{< /highlight >}}
 
 <div class="modal fade bd-example-modal-xl" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-xl" role="document">
+  <div class="modal-dialog modal-xl">
     <div class="modal-content">
 
       <div class="modal-header">
@@ -683,7 +683,7 @@ Our default modal without modifier class constitutes the "medium" size modal.
 </div>
 
 <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg" role="document">
+  <div class="modal-dialog modal-lg">
     <div class="modal-content">
 
       <div class="modal-header">
@@ -700,7 +700,7 @@ Our default modal without modifier class constitutes the "medium" size modal.
 </div>
 
 <div class="modal fade bd-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-sm" role="document">
+  <div class="modal-dialog modal-sm">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title h4" id="mySmallModalLabel">Small modal</h5>
@@ -731,15 +731,13 @@ Activate a modal without writing JavaScript. Set `data-toggle="modal"` on a cont
 
 Create a modal with a single line of JavaScript:
 
-{{< highlight js >}}
-var myModal = new bootstrap.Modal(document.getElementById('myModal'), options)
-{{< /highlight >}}
+{{< highlight js >}}var myModal = new bootstrap.Modal(document.getElementById('myModal'), options){{< /highlight >}}
 
 ### Options
 
 Options can be passed via data attributes or JavaScript. For data attributes, append the option name to `data-`, as in `data-backdrop=""`.
 
-<table class="table">
+<table class="table table-bordered table-striped">
   <thead>
     <tr>
       <th style="width: 100px;">Name</th>
@@ -822,23 +820,23 @@ Destroys an element's modal.
 
 {{< highlight js >}}myModal.dispose(){{< /highlight >}}
 
-#### getInstance
+#### _getInstance
 
 *Static* method which allows you to get the modal instance associated with a DOM element
 
 {{< highlight js >}}
 var myModalEl = document.getElementById('myModal')
-var modal = bootstrap.Modal.getInstance(myModalEl) // Returns a Bootstrap modal instance
+var modal = bootstrap.Modal._getInstance(myModalEl) // Return a Bootstrap modal instance
 {{< /highlight >}}
 
 ### Events
 
 Bootstrap's modal class exposes a few events for hooking into modal functionality. All modal events are fired at the modal itself (i.e. at the `<div class="modal">`).
 
-<table class="table">
+<table class="table table-bordered table-striped">
   <thead>
     <tr>
-      <th style="width: 150px;">Event type</th>
+      <th style="width: 150px;">Event Type</th>
       <th>Description</th>
     </tr>
   </thead>

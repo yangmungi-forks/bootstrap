@@ -159,32 +159,10 @@ var button = document.getElementById('myButton')
 var bsButton = new bootstrap.Button(button)
 {{< /highlight >}}
 
-<table class="table">
-  <thead>
-    <tr>
-      <th>Method</th>
-      <th>Description</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>
-        <code>toggle</code>
-      </td>
-      <td>
-        Toggles push state. Gives the button the appearance that it has been activated.
-      </td>
-    </tr>
-    <tr>
-      <td>
-        <code>dispose</code>
-      </td>
-      <td>
-        Destroys an element's button.
-      </td>
-    </tr>
-  </tbody>
-</table>
+| Method    | Description                                                                     |
+| --------- | ------------------------------------------------------------------------------- |
+| `toggle`  | Toggles push state. Gives the button the appearance that it has been activated. |
+| `dispose` | Destroys an element's button.                                                   |
 
 For example, to toggle all buttons
 

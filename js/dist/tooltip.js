@@ -4,8 +4,8 @@
   * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
   */
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('../dom/data.js'), require('../dom/event-handler.js'), require('../dom/manipulator.js'), require('popper.js'), require('../dom/selector-engine.js')) :
-  typeof define === 'function' && define.amd ? define(['../dom/data.js', '../dom/event-handler.js', '../dom/manipulator.js', 'popper.js', '../dom/selector-engine.js'], factory) :
+  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('./dom/data.js'), require('./dom/event-handler.js'), require('./dom/manipulator.js'), require('popper.js'), require('./dom/selector-engine.js')) :
+  typeof define === 'function' && define.amd ? define(['./dom/data.js', './dom/event-handler.js', './dom/manipulator.js', 'popper.js', './dom/selector-engine.js'], factory) :
   (global = global || self, global.Tooltip = factory(global.Data, global.EventHandler, global.Manipulator, global.Popper, global.SelectorEngine));
 }(this, function (Data, EventHandler, Manipulator, Popper, SelectorEngine) { 'use strict';
 
@@ -46,35 +46,20 @@
     return obj;
   }
 
-  function ownKeys(object, enumerableOnly) {
-    var keys = Object.keys(object);
-
-    if (Object.getOwnPropertySymbols) {
-      var symbols = Object.getOwnPropertySymbols(object);
-      if (enumerableOnly) symbols = symbols.filter(function (sym) {
-        return Object.getOwnPropertyDescriptor(object, sym).enumerable;
-      });
-      keys.push.apply(keys, symbols);
-    }
-
-    return keys;
-  }
-
-  function _objectSpread2(target) {
+  function _objectSpread(target) {
     for (var i = 1; i < arguments.length; i++) {
       var source = arguments[i] != null ? arguments[i] : {};
+      var ownKeys = Object.keys(source);
 
-      if (i % 2) {
-        ownKeys(source, true).forEach(function (key) {
-          _defineProperty(target, key, source[key]);
-        });
-      } else if (Object.getOwnPropertyDescriptors) {
-        Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
-      } else {
-        ownKeys(source).forEach(function (key) {
-          Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
-        });
+      if (typeof Object.getOwnPropertySymbols === 'function') {
+        ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) {
+          return Object.getOwnPropertyDescriptor(source, sym).enumerable;
+        }));
       }
+
+      ownKeys.forEach(function (key) {
+        _defineProperty(target, key, source[key]);
+      });
     }
 
     return target;
@@ -88,7 +73,9 @@
    */
   var MAX_UID = 1000000;
   var MILLISECONDS_MULTIPLIER = 1000;
-  var TRANSITION_END = 'transitionend'; // Shoutout AngusCroll (https://goo.gl/pxwQGp)
+  var TRANSITION_END = 'transitionend';
+  var _window = window,
+      jQuery = _window.jQuery; // Shoutout AngusCroll (https://goo.gl/pxwQGp)
 
   var toType = function toType(obj) {
     return {}.toString.call(obj).match(/\s([a-z]+)/i)[1].toLowerCase();
@@ -208,17 +195,6 @@
     return function () {};
   };
 
-  var getjQuery = function getjQuery() {
-    var _window = window,
-        jQuery = _window.jQuery;
-
-    if (jQuery && !document.body.hasAttribute('data-no-jquery')) {
-      return jQuery;
-    }
-
-    return null;
-  };
-
   /**
    * --------------------------------------------------------------------------
    * Bootstrap (v4.3.1): util/sanitizer.js
@@ -332,7 +308,7 @@
     };
 
     for (var i = 0, len = elements.length; i < len; i++) {
-      var _ret = _loop(i);
+      var _ret = _loop(i, len);
 
       if (_ret === "continue") continue;
     }
@@ -368,8 +344,7 @@
     boundary: '(string|element)',
     sanitize: 'boolean',
     sanitizeFn: '(null|function)',
-    whiteList: 'object',
-    popperConfig: '(null|object)'
+    whiteList: 'object'
   };
   var AttachmentMap = {
     AUTO: 'auto',
@@ -393,8 +368,7 @@
     boundary: 'scrollParent',
     sanitize: true,
     sanitizeFn: null,
-    whiteList: DefaultWhitelist,
-    popperConfig: null
+    whiteList: DefaultWhitelist
   };
   var HoverState = {
     SHOW: 'show',
@@ -417,7 +391,8 @@
     SHOW: 'show'
   };
   var Selector = {
-    TOOLTIP_INNER: '.tooltip-inner'
+    TOOLTIP_INNER: '.tooltip-inner',
+    TOOLTIP_ARROW: '.tooltip-arrow'
   };
   var Trigger = {
     HOVER: 'hover',
@@ -436,6 +411,10 @@
   /*#__PURE__*/
   function () {
     function Tooltip(element, config) {
+      /**
+       * Check for Popper dependency
+       * Popper - https://popper.js.org
+       */
       if (typeof Popper === 'undefined') {
         throw new TypeError('Bootstrap\'s tooltips require Popper.js (https://popper.js.org)');
       } // private
@@ -508,7 +487,7 @@
       clearTimeout(this._timeout);
       Data.removeData(this.element, this.constructor.DATA_KEY);
       EventHandler.off(this.element, this.constructor.EVENT_KEY);
-      EventHandler.off(SelectorEngine.closest(this.element, '.modal'), 'hide.bs.modal', this._hideModalHandler);
+      EventHandler.off(SelectorEngine.closest(this.element, '.modal'), 'hide.bs.modal');
 
       if (this.tip) {
         this.tip.parentNode.removeChild(this.tip);
@@ -519,7 +498,7 @@
       this._hoverState = null;
       this._activeTrigger = null;
 
-      if (this._popper) {
+      if (this._popper !== null) {
         this._popper.destroy();
       }
 
@@ -559,7 +538,7 @@
 
         var attachment = this._getAttachment(placement);
 
-        this._addAttachmentClass(attachment);
+        this.addAttachmentClass(attachment);
 
         var container = this._getContainer();
 
@@ -570,7 +549,29 @@
         }
 
         EventHandler.trigger(this.element, this.constructor.Event.INSERTED);
-        this._popper = new Popper(this.element, tip, this._getPopperConfig(attachment));
+        this._popper = new Popper(this.element, tip, {
+          placement: attachment,
+          modifiers: {
+            offset: this._getOffset(),
+            flip: {
+              behavior: this.config.fallbackPlacement
+            },
+            arrow: {
+              element: Selector.TOOLTIP_ARROW
+            },
+            preventOverflow: {
+              boundariesElement: this.config.boundary
+            }
+          },
+          onCreate: function onCreate(data) {
+            if (data.originalPlacement !== data.placement) {
+              _this._handlePopperPlacementChange(data);
+            }
+          },
+          onUpdate: function onUpdate(data) {
+            return _this._handlePopperPlacementChange(data);
+          }
+        });
         tip.classList.add(ClassName.SHOW); // If this is a touch-enabled device we add extra
         // empty mouseover listeners to the body's immediate children;
         // only needed because of broken event delegation on iOS
@@ -606,7 +607,7 @@
       }
     };
 
-    _proto.hide = function hide() {
+    _proto.hide = function hide(callback) {
       var _this2 = this;
 
       var tip = this.getTipElement();
@@ -622,7 +623,13 @@
 
         EventHandler.trigger(_this2.element, _this2.constructor.Event.HIDDEN);
 
-        _this2._popper.destroy();
+        if (_this2._popper !== null) {
+          _this2._popper.destroy();
+        }
+
+        if (callback) {
+          callback();
+        }
       };
 
       var hideEvent = EventHandler.trigger(this.element, this.constructor.Event.HIDE);
@@ -666,6 +673,10 @@
       return Boolean(this.getTitle());
     };
 
+    _proto.addAttachmentClass = function addAttachmentClass(attachment) {
+      this.getTipElement().classList.add(CLASS_PREFIX + "-" + attachment);
+    };
+
     _proto.getTipElement = function getTipElement() {
       if (this.tip) {
         return this.tip;
@@ -689,7 +700,7 @@
         return;
       }
 
-      if (typeof content === 'object' && isElement(content)) {
+      if (typeof content === 'object' && (content.nodeType || content.jquery)) {
         if (content.jquery) {
           content = content[0];
         } // content is a DOM node or a jQuery
@@ -729,47 +740,14 @@
     } // Private
     ;
 
-    _proto._getPopperConfig = function _getPopperConfig(attachment) {
-      var _this3 = this;
-
-      var defaultBsConfig = {
-        placement: attachment,
-        modifiers: {
-          offset: this._getOffset(),
-          flip: {
-            behavior: this.config.fallbackPlacement
-          },
-          arrow: {
-            element: "." + this.constructor.NAME + "-arrow"
-          },
-          preventOverflow: {
-            boundariesElement: this.config.boundary
-          }
-        },
-        onCreate: function onCreate(data) {
-          if (data.originalPlacement !== data.placement) {
-            _this3._handlePopperPlacementChange(data);
-          }
-        },
-        onUpdate: function onUpdate(data) {
-          return _this3._handlePopperPlacementChange(data);
-        }
-      };
-      return _objectSpread2({}, defaultBsConfig, {}, this.config.popperConfig);
-    };
-
-    _proto._addAttachmentClass = function _addAttachmentClass(attachment) {
-      this.getTipElement().classList.add(CLASS_PREFIX + "-" + attachment);
-    };
-
     _proto._getOffset = function _getOffset() {
-      var _this4 = this;
+      var _this3 = this;
 
       var offset = {};
 
       if (typeof this.config.offset === 'function') {
         offset.fn = function (data) {
-          data.offsets = _objectSpread2({}, data.offsets, {}, _this4.config.offset(data.offsets, _this4.element) || {});
+          data.offsets = _objectSpread({}, data.offsets, _this3.config.offset(data.offsets, _this3.element) || {});
           return data;
         };
       } else {
@@ -796,36 +774,33 @@
     };
 
     _proto._setListeners = function _setListeners() {
-      var _this5 = this;
+      var _this4 = this;
 
       var triggers = this.config.trigger.split(' ');
       triggers.forEach(function (trigger) {
         if (trigger === 'click') {
-          EventHandler.on(_this5.element, _this5.constructor.Event.CLICK, _this5.config.selector, function (event) {
-            return _this5.toggle(event);
+          EventHandler.on(_this4.element, _this4.constructor.Event.CLICK, _this4.config.selector, function (event) {
+            return _this4.toggle(event);
           });
         } else if (trigger !== Trigger.MANUAL) {
-          var eventIn = trigger === Trigger.HOVER ? _this5.constructor.Event.MOUSEENTER : _this5.constructor.Event.FOCUSIN;
-          var eventOut = trigger === Trigger.HOVER ? _this5.constructor.Event.MOUSELEAVE : _this5.constructor.Event.FOCUSOUT;
-          EventHandler.on(_this5.element, eventIn, _this5.config.selector, function (event) {
-            return _this5._enter(event);
+          var eventIn = trigger === Trigger.HOVER ? _this4.constructor.Event.MOUSEENTER : _this4.constructor.Event.FOCUSIN;
+          var eventOut = trigger === Trigger.HOVER ? _this4.constructor.Event.MOUSELEAVE : _this4.constructor.Event.FOCUSOUT;
+          EventHandler.on(_this4.element, eventIn, _this4.config.selector, function (event) {
+            return _this4._enter(event);
           });
-          EventHandler.on(_this5.element, eventOut, _this5.config.selector, function (event) {
-            return _this5._leave(event);
+          EventHandler.on(_this4.element, eventOut, _this4.config.selector, function (event) {
+            return _this4._leave(event);
           });
         }
       });
-
-      this._hideModalHandler = function () {
-        if (_this5.element) {
-          _this5.hide();
+      EventHandler.on(SelectorEngine.closest(this.element, '.modal'), 'hide.bs.modal', function () {
+        if (_this4.element) {
+          _this4.hide();
         }
-      };
-
-      EventHandler.on(SelectorEngine.closest(this.element, '.modal'), 'hide.bs.modal', this._hideModalHandler);
+      });
 
       if (this.config.selector) {
-        this.config = _objectSpread2({}, this.config, {
+        this.config = _objectSpread({}, this.config, {
           trigger: 'manual',
           selector: ''
         });
@@ -930,7 +905,7 @@
         config.container = config.container[0];
       }
 
-      config = _objectSpread2({}, this.constructor.Default, {}, dataAttributes, {}, typeof config === 'object' && config ? config : {});
+      config = _objectSpread({}, this.constructor.Default, dataAttributes, typeof config === 'object' && config ? config : {});
 
       if (typeof config.delay === 'number') {
         config.delay = {
@@ -989,7 +964,7 @@
 
       this._cleanTipClass();
 
-      this._addAttachmentClass(this._getAttachment(popperData.placement));
+      this.addAttachmentClass(this._getAttachment(popperData.placement));
     };
 
     _proto._fixTransition = function _fixTransition() {
@@ -1008,7 +983,7 @@
     } // Static
     ;
 
-    Tooltip.jQueryInterface = function jQueryInterface(config) {
+    Tooltip._jQueryInterface = function _jQueryInterface(config) {
       return this.each(function () {
         var data = Data.getData(this, DATA_KEY);
 
@@ -1032,7 +1007,7 @@
       });
     };
 
-    Tooltip.getInstance = function getInstance(element) {
+    Tooltip._getInstance = function _getInstance(element) {
       return Data.getData(element, DATA_KEY);
     };
 
@@ -1075,8 +1050,6 @@
 
     return Tooltip;
   }();
-
-  var $ = getjQuery();
   /**
    * ------------------------------------------------------------------------
    * jQuery
@@ -1084,16 +1057,15 @@
    * add .tooltip to jQuery only if jQuery is present
    */
 
-  /* istanbul ignore if */
 
-  if ($) {
-    var JQUERY_NO_CONFLICT = $.fn[NAME];
-    $.fn[NAME] = Tooltip.jQueryInterface;
-    $.fn[NAME].Constructor = Tooltip;
+  if (typeof jQuery !== 'undefined') {
+    var JQUERY_NO_CONFLICT = jQuery.fn[NAME];
+    jQuery.fn[NAME] = Tooltip._jQueryInterface;
+    jQuery.fn[NAME].Constructor = Tooltip;
 
-    $.fn[NAME].noConflict = function () {
-      $.fn[NAME] = JQUERY_NO_CONFLICT;
-      return Tooltip.jQueryInterface;
+    jQuery.fn[NAME].noConflict = function () {
+      jQuery.fn[NAME] = JQUERY_NO_CONFLICT;
+      return Tooltip._jQueryInterface;
     };
   }
 

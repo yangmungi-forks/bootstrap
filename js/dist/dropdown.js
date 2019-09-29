@@ -4,8 +4,8 @@
   * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
   */
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('../dom/data.js'), require('../dom/event-handler.js'), require('../dom/manipulator.js'), require('popper.js'), require('../dom/selector-engine.js')) :
-  typeof define === 'function' && define.amd ? define(['../dom/data.js', '../dom/event-handler.js', '../dom/manipulator.js', 'popper.js', '../dom/selector-engine.js'], factory) :
+  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('./dom/data.js'), require('./dom/event-handler.js'), require('./dom/manipulator.js'), require('popper.js'), require('./dom/selector-engine.js')) :
+  typeof define === 'function' && define.amd ? define(['./dom/data.js', './dom/event-handler.js', './dom/manipulator.js', 'popper.js', './dom/selector-engine.js'], factory) :
   (global = global || self, global.Dropdown = factory(global.Data, global.EventHandler, global.Manipulator, global.Popper, global.SelectorEngine));
 }(this, function (Data, EventHandler, Manipulator, Popper, SelectorEngine) { 'use strict';
 
@@ -46,35 +46,20 @@
     return obj;
   }
 
-  function ownKeys(object, enumerableOnly) {
-    var keys = Object.keys(object);
-
-    if (Object.getOwnPropertySymbols) {
-      var symbols = Object.getOwnPropertySymbols(object);
-      if (enumerableOnly) symbols = symbols.filter(function (sym) {
-        return Object.getOwnPropertyDescriptor(object, sym).enumerable;
-      });
-      keys.push.apply(keys, symbols);
-    }
-
-    return keys;
-  }
-
-  function _objectSpread2(target) {
+  function _objectSpread(target) {
     for (var i = 1; i < arguments.length; i++) {
       var source = arguments[i] != null ? arguments[i] : {};
+      var ownKeys = Object.keys(source);
 
-      if (i % 2) {
-        ownKeys(source, true).forEach(function (key) {
-          _defineProperty(target, key, source[key]);
-        });
-      } else if (Object.getOwnPropertyDescriptors) {
-        Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
-      } else {
-        ownKeys(source).forEach(function (key) {
-          Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
-        });
+      if (typeof Object.getOwnPropertySymbols === 'function') {
+        ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) {
+          return Object.getOwnPropertyDescriptor(source, sym).enumerable;
+        }));
       }
+
+      ownKeys.forEach(function (key) {
+        _defineProperty(target, key, source[key]);
+      });
     }
 
     return target;
@@ -86,25 +71,26 @@
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
    * --------------------------------------------------------------------------
    */
+  var _window = window,
+      jQuery = _window.jQuery; // Shoutout AngusCroll (https://goo.gl/pxwQGp)
 
   var toType = function toType(obj) {
     return {}.toString.call(obj).match(/\s([a-z]+)/i)[1].toLowerCase();
   };
 
-  var getSelector = function getSelector(element) {
+  var getSelectorFromElement = function getSelectorFromElement(element) {
     var selector = element.getAttribute('data-target');
 
     if (!selector || selector === '#') {
       var hrefAttr = element.getAttribute('href');
-      selector = hrefAttr && hrefAttr !== '#' ? hrefAttr.trim() : null;
+      selector = hrefAttr && hrefAttr !== '#' ? hrefAttr.trim() : '';
     }
 
-    return selector;
-  };
-
-  var getElementFromSelector = function getElementFromSelector(element) {
-    var selector = getSelector(element);
-    return selector ? document.querySelector(selector) : null;
+    try {
+      return document.querySelector(selector) ? selector : null;
+    } catch (error) {
+      return null;
+    }
   };
 
   var isElement = function isElement(obj) {
@@ -134,17 +120,6 @@
 
   var noop = function noop() {
     return function () {};
-  };
-
-  var getjQuery = function getjQuery() {
-    var _window = window,
-        jQuery = _window.jQuery;
-
-    if (jQuery && !document.body.hasAttribute('data-no-jquery')) {
-      return jQuery;
-    }
-
-    return null;
   };
 
   /**
@@ -212,16 +187,14 @@
     flip: true,
     boundary: 'scrollParent',
     reference: 'toggle',
-    display: 'dynamic',
-    popperConfig: null
+    display: 'dynamic'
   };
   var DefaultType = {
     offset: '(number|string|function)',
     flip: 'boolean',
     boundary: '(string|element)',
     reference: '(string|element)',
-    display: 'string',
-    popperConfig: '(null|object)'
+    display: 'string'
     /**
      * ------------------------------------------------------------------------
      * Class Definition
@@ -254,23 +227,16 @@
         return;
       }
 
+      var parent = Dropdown._getParentFromElement(this._element);
+
       var isActive = this._menu.classList.contains(ClassName.SHOW);
 
-      Dropdown.clearMenus();
+      Dropdown._clearMenus();
 
       if (isActive) {
         return;
       }
 
-      this.show();
-    };
-
-    _proto.show = function show() {
-      if (this._element.disabled || this._element.classList.contains(ClassName.DISABLED) || this._menu.classList.contains(ClassName.SHOW)) {
-        return;
-      }
-
-      var parent = Dropdown.getParentFromElement(this._element);
       var relatedTarget = {
         relatedTarget: this._element
       };
@@ -282,6 +248,10 @@
 
 
       if (!this._inNavbar) {
+        /**
+         * Check for Popper dependency
+         * Popper - https://popper.js.org
+         */
         if (typeof Popper === 'undefined') {
           throw new TypeError('Bootstrap\'s dropdowns require Popper.js (https://popper.js.org)');
         }
@@ -327,12 +297,34 @@
       EventHandler.trigger(parent, Event.SHOWN, relatedTarget);
     };
 
+    _proto.show = function show() {
+      if (this._element.disabled || this._element.classList.contains(ClassName.DISABLED) || this._menu.classList.contains(ClassName.SHOW)) {
+        return;
+      }
+
+      var parent = Dropdown._getParentFromElement(this._element);
+
+      var relatedTarget = {
+        relatedTarget: this._element
+      };
+      var showEvent = EventHandler.trigger(parent, Event.SHOW, relatedTarget);
+
+      if (showEvent.defaultPrevented) {
+        return;
+      }
+
+      Manipulator.toggleClass(this._menu, ClassName.SHOW);
+      Manipulator.toggleClass(parent, ClassName.SHOW);
+      EventHandler.trigger(parent, Event.SHOWN, relatedTarget);
+    };
+
     _proto.hide = function hide() {
       if (this._element.disabled || this._element.classList.contains(ClassName.DISABLED) || !this._menu.classList.contains(ClassName.SHOW)) {
         return;
       }
 
-      var parent = Dropdown.getParentFromElement(this._element);
+      var parent = Dropdown._getParentFromElement(this._element);
+
       var relatedTarget = {
         relatedTarget: this._element
       };
@@ -340,10 +332,6 @@
 
       if (hideEvent.defaultPrevented) {
         return;
-      }
-
-      if (this._popper) {
-        this._popper.destroy();
       }
 
       Manipulator.toggleClass(this._menu, ClassName.SHOW);
@@ -357,7 +345,7 @@
       this._element = null;
       this._menu = null;
 
-      if (this._popper) {
+      if (this._popper !== null) {
         this._popper.destroy();
 
         this._popper = null;
@@ -367,7 +355,7 @@
     _proto.update = function update() {
       this._inNavbar = this._detectNavbar();
 
-      if (this._popper) {
+      if (this._popper !== null) {
         this._popper.scheduleUpdate();
       }
     } // Private
@@ -385,14 +373,21 @@
     };
 
     _proto._getConfig = function _getConfig(config) {
-      config = _objectSpread2({}, this.constructor.Default, {}, Manipulator.getDataAttributes(this._element), {}, config);
+      config = _objectSpread({}, this.constructor.Default, Manipulator.getDataAttributes(this._element), config);
       typeCheckConfig(NAME, config, this.constructor.DefaultType);
       return config;
     };
 
     _proto._getMenuElement = function _getMenuElement() {
-      var parent = Dropdown.getParentFromElement(this._element);
-      return SelectorEngine.findOne(Selector.MENU, parent);
+      if (!this._menu) {
+        var parent = Dropdown._getParentFromElement(this._element);
+
+        if (parent) {
+          this._menu = SelectorEngine.findOne(Selector.MENU, parent);
+        }
+      }
+
+      return this._menu;
     };
 
     _proto._getPlacement = function _getPlacement() {
@@ -427,7 +422,7 @@
 
       if (typeof this._config.offset === 'function') {
         offset.fn = function (data) {
-          data.offsets = _objectSpread2({}, data.offsets, {}, _this2._config.offset(data.offsets, _this2._element) || {});
+          data.offsets = _objectSpread({}, data.offsets, _this2._config.offset(data.offsets, _this2._element) || {});
           return data;
         };
       } else {
@@ -458,11 +453,11 @@
         };
       }
 
-      return _objectSpread2({}, popperConfig, {}, this._config.popperConfig);
+      return popperConfig;
     } // Static
     ;
 
-    Dropdown.dropdownInterface = function dropdownInterface(element, config) {
+    Dropdown._dropdownInterface = function _dropdownInterface(element, config) {
       var data = Data.getData(element, DATA_KEY);
 
       var _config = typeof config === 'object' ? config : null;
@@ -480,13 +475,13 @@
       }
     };
 
-    Dropdown.jQueryInterface = function jQueryInterface(config) {
+    Dropdown._jQueryInterface = function _jQueryInterface(config) {
       return this.each(function () {
-        Dropdown.dropdownInterface(this, config);
+        Dropdown._dropdownInterface(this, config);
       });
     };
 
-    Dropdown.clearMenus = function clearMenus(event) {
+    Dropdown._clearMenus = function _clearMenus(event) {
       if (event && (event.which === RIGHT_MOUSE_BUTTON_WHICH || event.type === 'keyup' && event.which !== TAB_KEYCODE)) {
         return;
       }
@@ -494,7 +489,8 @@
       var toggles = makeArray(SelectorEngine.find(Selector.DATA_TOGGLE));
 
       for (var i = 0, len = toggles.length; i < len; i++) {
-        var parent = Dropdown.getParentFromElement(toggles[i]);
+        var parent = Dropdown._getParentFromElement(toggles[i]);
+
         var context = Data.getData(toggles[i], DATA_KEY);
         var relatedTarget = {
           relatedTarget: toggles[i]
@@ -533,22 +529,24 @@
         }
 
         toggles[i].setAttribute('aria-expanded', 'false');
-
-        if (context._popper) {
-          context._popper.destroy();
-        }
-
         dropdownMenu.classList.remove(ClassName.SHOW);
         parent.classList.remove(ClassName.SHOW);
         EventHandler.trigger(parent, Event.HIDDEN, relatedTarget);
       }
     };
 
-    Dropdown.getParentFromElement = function getParentFromElement(element) {
-      return getElementFromSelector(element) || element.parentNode;
+    Dropdown._getParentFromElement = function _getParentFromElement(element) {
+      var parent;
+      var selector = getSelectorFromElement(element);
+
+      if (selector) {
+        parent = SelectorEngine.findOne(selector);
+      }
+
+      return parent || element.parentNode;
     };
 
-    Dropdown.dataApiKeydownHandler = function dataApiKeydownHandler(event) {
+    Dropdown._dataApiKeydownHandler = function _dataApiKeydownHandler(event) {
       // If not input/textarea:
       //  - And not a key in REGEXP_KEYDOWN => not a dropdown command
       // If input/textarea:
@@ -567,15 +565,17 @@
         return;
       }
 
-      var parent = Dropdown.getParentFromElement(this);
+      var parent = Dropdown._getParentFromElement(this);
+
       var isActive = parent.classList.contains(ClassName.SHOW);
 
       if (!isActive || isActive && (event.which === ESCAPE_KEYCODE || event.which === SPACE_KEYCODE)) {
         if (event.which === ESCAPE_KEYCODE) {
-          SelectorEngine.findOne(Selector.DATA_TOGGLE, parent).focus();
+          EventHandler.trigger(SelectorEngine.findOne(Selector.DATA_TOGGLE, parent), 'focus');
         }
 
-        Dropdown.clearMenus();
+        Dropdown._clearMenus();
+
         return;
       }
 
@@ -604,7 +604,7 @@
       items[index].focus();
     };
 
-    Dropdown.getInstance = function getInstance(element) {
+    Dropdown._getInstance = function _getInstance(element) {
       return Data.getData(element, DATA_KEY);
     };
 
@@ -634,19 +634,19 @@
    */
 
 
-  EventHandler.on(document, Event.KEYDOWN_DATA_API, Selector.DATA_TOGGLE, Dropdown.dataApiKeydownHandler);
-  EventHandler.on(document, Event.KEYDOWN_DATA_API, Selector.MENU, Dropdown.dataApiKeydownHandler);
-  EventHandler.on(document, Event.CLICK_DATA_API, Dropdown.clearMenus);
-  EventHandler.on(document, Event.KEYUP_DATA_API, Dropdown.clearMenus);
+  EventHandler.on(document, Event.KEYDOWN_DATA_API, Selector.DATA_TOGGLE, Dropdown._dataApiKeydownHandler);
+  EventHandler.on(document, Event.KEYDOWN_DATA_API, Selector.MENU, Dropdown._dataApiKeydownHandler);
+  EventHandler.on(document, Event.CLICK_DATA_API, Dropdown._clearMenus);
+  EventHandler.on(document, Event.KEYUP_DATA_API, Dropdown._clearMenus);
   EventHandler.on(document, Event.CLICK_DATA_API, Selector.DATA_TOGGLE, function (event) {
     event.preventDefault();
     event.stopPropagation();
-    Dropdown.dropdownInterface(this, 'toggle');
+
+    Dropdown._dropdownInterface(this, 'toggle');
   });
   EventHandler.on(document, Event.CLICK_DATA_API, Selector.FORM_CHILD, function (e) {
     return e.stopPropagation();
   });
-  var $ = getjQuery();
   /**
    * ------------------------------------------------------------------------
    * jQuery
@@ -654,16 +654,14 @@
    * add .dropdown to jQuery only if jQuery is present
    */
 
-  /* istanbul ignore if */
+  if (typeof jQuery !== 'undefined') {
+    var JQUERY_NO_CONFLICT = jQuery.fn[NAME];
+    jQuery.fn[NAME] = Dropdown._jQueryInterface;
+    jQuery.fn[NAME].Constructor = Dropdown;
 
-  if ($) {
-    var JQUERY_NO_CONFLICT = $.fn[NAME];
-    $.fn[NAME] = Dropdown.jQueryInterface;
-    $.fn[NAME].Constructor = Dropdown;
-
-    $.fn[NAME].noConflict = function () {
-      $.fn[NAME] = JQUERY_NO_CONFLICT;
-      return Dropdown.jQueryInterface;
+    jQuery.fn[NAME].noConflict = function () {
+      jQuery.fn[NAME] = JQUERY_NO_CONFLICT;
+      return Dropdown._jQueryInterface;
     };
   }
 

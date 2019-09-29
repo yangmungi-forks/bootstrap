@@ -6,11 +6,11 @@ group: content
 toc: true
 ---
 
-## Overview
+## Examples
 
-Due to the widespread use of `<table>` elements across third-party widgets like calendars and date pickers, Bootstrap's tables are **opt-in**. Add the base class `.table` to any `<table>`, then extend with our optional modifier classes or custom styles. **All table styles are inherited in Bootstrap**, meaning any nested tables will be styled in the same manner as the parent.
+Due to the widespread use of tables across third-party widgets like calendars and date pickers, we've designed our tables to be **opt-in**. Just add the base class `.table` to any `<table>`, then extend with custom styles or our various included modifier classes.
 
-Using the most basic table markup, here's how `.table`-based tables look in Bootstrap.
+Using the most basic table markup, here's how `.table`-based tables look in Bootstrap. **All table styles are inherited in Bootstrap 4**, meaning any nested tables will be styled in the same manner as the parent.
 
 {{< example >}}
 <table class="table">
@@ -44,10 +44,6 @@ Using the most basic table markup, here's how `.table`-based tables look in Boot
   </tbody>
 </table>
 {{< /example >}}
-
-## Options
-
-### Inverted
 
 You can also invert the colors—with light text on dark backgrounds—with `.table-dark`.
 
@@ -84,7 +80,75 @@ You can also invert the colors—with light text on dark backgrounds—with `.ta
 </table>
 {{< /example >}}
 
-### Striped rows
+## Table head options
+
+Similar to tables and dark tables, use the modifier classes `.thead-light` or `.thead-dark` to make `<thead>`s appear light or dark gray.
+
+{{< example >}}
+<table class="table">
+  <thead class="thead-dark">
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">First</th>
+      <th scope="col">Last</th>
+      <th scope="col">Handle</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="row">1</th>
+      <td>Mark</td>
+      <td>Otto</td>
+      <td>@mdo</td>
+    </tr>
+    <tr>
+      <th scope="row">2</th>
+      <td>Jacob</td>
+      <td>Thornton</td>
+      <td>@fat</td>
+    </tr>
+    <tr>
+      <th scope="row">3</th>
+      <td>Larry</td>
+      <td>the Bird</td>
+      <td>@twitter</td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="table">
+  <thead class="thead-light">
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">First</th>
+      <th scope="col">Last</th>
+      <th scope="col">Handle</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="row">1</th>
+      <td>Mark</td>
+      <td>Otto</td>
+      <td>@mdo</td>
+    </tr>
+    <tr>
+      <th scope="row">2</th>
+      <td>Jacob</td>
+      <td>Thornton</td>
+      <td>@fat</td>
+    </tr>
+    <tr>
+      <th scope="row">3</th>
+      <td>Larry</td>
+      <td>the Bird</td>
+      <td>@twitter</td>
+    </tr>
+  </tbody>
+</table>
+{{< /example >}}
+
+## Striped rows
 
 Use `.table-striped` to add zebra-striping to any table row within the `<tbody>`.
 
@@ -154,7 +218,7 @@ Use `.table-striped` to add zebra-striping to any table row within the `<tbody>`
 </table>
 {{< /example >}}
 
-### Bordered
+## Bordered table
 
 Add `.table-bordered` for borders on all sides of the table and cells.
 
@@ -222,7 +286,7 @@ Add `.table-bordered` for borders on all sides of the table and cells.
 </table>
 {{< /example >}}
 
-### No borders
+## Borderless table
 
 Add `.table-borderless` for a table without borders.
 
@@ -292,7 +356,7 @@ Add `.table-borderless` for a table without borders.
 </table>
 {{< /example >}}
 
-### Hoverable rows
+## Hoverable rows
 
 Add `.table-hover` to enable a hover state on table rows within a `<tbody>`.
 
@@ -360,9 +424,9 @@ Add `.table-hover` to enable a hover state on table rows within a `<tbody>`.
 </table>
 {{< /example >}}
 
-### Small tables
+## Small table
 
-Add `.table-sm` to make any `.table` more compact by cutting all cell `padding` in half.
+Add `.table-sm` to make tables more compact by cutting cell padding in half.
 
 {{< example >}}
 <table class="table table-sm">
@@ -396,44 +460,39 @@ Add `.table-sm` to make any `.table` more compact by cutting all cell `padding` 
 </table>
 {{< /example >}}
 
-## Vertical alignment
-
-Table cells of `<thead>` are always vertical aligned to the bottom. Table cells in `<tbody>` inherit their alignment from `<table>` and are aligned to the the top by default.
-
 {{< example >}}
-<table class="table align-middle">
+<table class="table table-sm table-dark">
   <thead>
     <tr>
-      <th scope="col" class="w-25">Heading 1</th>
-      <th scope="col" class="w-25">Heading 2</th>
-      <th scope="col" class="w-25">Heading 2</th>
-      <th scope="col" class="w-25">Heading 4</th>
+      <th scope="col">#</th>
+      <th scope="col">First</th>
+      <th scope="col">Last</th>
+      <th scope="col">Handle</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td>This cell inherits <code>vertical-align: middle;</code> from the table</td>
-      <td>This cell inherits <code>vertical-align: middle;</code> from the table</td>
-      <td>This cell inherits <code>vertical-align: middle;</code> from the table</td>
-      <td>Nulla vitae elit libero, a pharetra augue. Cras mattis consectetur purus sit amet fermentum. Vestibulum id ligula porta felis euismod semper.</td>
-    </tr>
-    <tr class="align-bottom">
-      <td>This cell inherits <code>vertical-align: bottom;</code> from the table row</td>
-      <td>This cell inherits <code>vertical-align: bottom;</code> from the table row</td>
-      <td>This cell inherits <code>vertical-align: bottom;</code> from the table row</td>
-      <td>Nulla vitae elit libero, a pharetra augue. Cras mattis consectetur purus sit amet fermentum. Vestibulum id ligula porta felis euismod semper.</td>
+      <th scope="row">1</th>
+      <td>Mark</td>
+      <td>Otto</td>
+      <td>@mdo</td>
     </tr>
     <tr>
-      <td>This cell inherits <code>vertical-align: middle;</code> from the table</td>
-      <td>This cell inherits <code>vertical-align: middle;</code> from the table</td>
-      <td class="align-top">This cell is aligned to the top.</td>
-      <td>Nulla vitae elit libero, a pharetra augue. Cras mattis consectetur purus sit amet fermentum. Vestibulum id ligula porta felis euismod semper.</td>
+      <th scope="row">2</th>
+      <td>Jacob</td>
+      <td>Thornton</td>
+      <td>@fat</td>
+    </tr>
+    <tr>
+      <th scope="row">3</th>
+      <td colspan="2">Larry the Bird</td>
+      <td>@twitter</td>
     </tr>
   </tbody>
 </table>
 {{< /example >}}
 
-### Variants
+## Contextual classes
 
 Use contextual classes to color table rows or individual cells.
 
@@ -574,77 +633,13 @@ Regular table background variants are not available with the dark table, however
 {{< partial "callout-warning-color-assistive-technologies.md" >}}
 {{< /callout >}}
 
-## Anatomy
+Create responsive tables by wrapping any `.table` with `.table-responsive{-sm|-md|-lg|-xl}`, making the table scroll horizontally at each `max-width` breakpoint of up to (but not including) 576px, 768px, 992px, and 1120px, respectively.
 
-### Table head
+{{< callout info >}}
+{{< partial "callout-info-mediaqueries-breakpoints.md" >}}
+{{< /callout >}}
 
-Similar to tables and dark tables, use the modifier classes `.thead-light` or `.thead-dark` to make `<thead>`s appear light or dark gray.
-
-{{< example >}}
-<table class="table">
-  <thead class="thead-dark">
-    <tr>
-      <th scope="col">#</th>
-      <th scope="col">First</th>
-      <th scope="col">Last</th>
-      <th scope="col">Handle</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th scope="row">1</th>
-      <td>Mark</td>
-      <td>Otto</td>
-      <td>@mdo</td>
-    </tr>
-    <tr>
-      <th scope="row">2</th>
-      <td>Jacob</td>
-      <td>Thornton</td>
-      <td>@fat</td>
-    </tr>
-    <tr>
-      <th scope="row">3</th>
-      <td>Larry</td>
-      <td>the Bird</td>
-      <td>@twitter</td>
-    </tr>
-  </tbody>
-</table>
-
-<table class="table">
-  <thead class="thead-light">
-    <tr>
-      <th scope="col">#</th>
-      <th scope="col">First</th>
-      <th scope="col">Last</th>
-      <th scope="col">Handle</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th scope="row">1</th>
-      <td>Mark</td>
-      <td>Otto</td>
-      <td>@mdo</td>
-    </tr>
-    <tr>
-      <th scope="row">2</th>
-      <td>Jacob</td>
-      <td>Thornton</td>
-      <td>@fat</td>
-    </tr>
-    <tr>
-      <th scope="row">3</th>
-      <td>Larry</td>
-      <td>the Bird</td>
-      <td>@twitter</td>
-    </tr>
-  </tbody>
-</table>
-{{< /example >}}
-
-### Captions
+## Captions
 
 A `<caption>` functions like a heading for a table. It helps users with screen readers to find a table and understand what it's about and decide if they want to read it.
 
@@ -770,10 +765,10 @@ Use `.table-responsive{-sm|-md|-lg|-xl}` as needed to create responsive tables u
 **These tables may appear broken until their responsive styles apply at specific viewport widths.**
 
 {{< tables.inline >}}
-{{ range $.Site.Data.breakpoints }}
-{{ if not (eq . "xs") }}
+{{ range $bp := $.Site.Data.breakpoints }}
+{{ if not (eq $bp "xs") }}
 <div class="bd-example">
-  <div class="table-responsive{{ .abbr }}">
+  <div class="table-responsive{{ $bp.abbr }}">
     <table class="table">
       <thead>
         <tr>
@@ -832,9 +827,9 @@ Use `.table-responsive{-sm|-md|-lg|-xl}` as needed to create responsive tables u
 
 {{< highlight html >}}
 {{< tables.inline >}}
-{{- range $.Site.Data.breakpoints -}}
-{{- if not (eq . "xs") }}
-<div class="table-responsive{{ .abbr }}">
+{{- range $bp := $.Site.Data.breakpoints -}}
+{{- if not (eq $bp "xs") }}
+<div class="table-responsive{{ $bp.abbr }}">
   <table class="table">
     ...
   </table>

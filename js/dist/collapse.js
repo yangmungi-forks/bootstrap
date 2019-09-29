@@ -4,8 +4,8 @@
   * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
   */
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('../dom/data.js'), require('../dom/event-handler.js'), require('../dom/manipulator.js'), require('../dom/selector-engine.js')) :
-  typeof define === 'function' && define.amd ? define(['../dom/data.js', '../dom/event-handler.js', '../dom/manipulator.js', '../dom/selector-engine.js'], factory) :
+  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('./dom/data.js'), require('./dom/event-handler.js'), require('./dom/manipulator.js'), require('./dom/selector-engine.js')) :
+  typeof define === 'function' && define.amd ? define(['./dom/data.js', './dom/event-handler.js', './dom/manipulator.js', './dom/selector-engine.js'], factory) :
   (global = global || self, global.Collapse = factory(global.Data, global.EventHandler, global.Manipulator, global.SelectorEngine));
 }(this, function (Data, EventHandler, Manipulator, SelectorEngine) { 'use strict';
 
@@ -45,35 +45,20 @@
     return obj;
   }
 
-  function ownKeys(object, enumerableOnly) {
-    var keys = Object.keys(object);
-
-    if (Object.getOwnPropertySymbols) {
-      var symbols = Object.getOwnPropertySymbols(object);
-      if (enumerableOnly) symbols = symbols.filter(function (sym) {
-        return Object.getOwnPropertyDescriptor(object, sym).enumerable;
-      });
-      keys.push.apply(keys, symbols);
-    }
-
-    return keys;
-  }
-
-  function _objectSpread2(target) {
+  function _objectSpread(target) {
     for (var i = 1; i < arguments.length; i++) {
       var source = arguments[i] != null ? arguments[i] : {};
+      var ownKeys = Object.keys(source);
 
-      if (i % 2) {
-        ownKeys(source, true).forEach(function (key) {
-          _defineProperty(target, key, source[key]);
-        });
-      } else if (Object.getOwnPropertyDescriptors) {
-        Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
-      } else {
-        ownKeys(source).forEach(function (key) {
-          Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
-        });
+      if (typeof Object.getOwnPropertySymbols === 'function') {
+        ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) {
+          return Object.getOwnPropertyDescriptor(source, sym).enumerable;
+        }));
       }
+
+      ownKeys.forEach(function (key) {
+        _defineProperty(target, key, source[key]);
+      });
     }
 
     return target;
@@ -86,36 +71,27 @@
    * --------------------------------------------------------------------------
    */
   var MILLISECONDS_MULTIPLIER = 1000;
-  var TRANSITION_END = 'transitionend'; // Shoutout AngusCroll (https://goo.gl/pxwQGp)
+  var TRANSITION_END = 'transitionend';
+  var _window = window,
+      jQuery = _window.jQuery; // Shoutout AngusCroll (https://goo.gl/pxwQGp)
 
   var toType = function toType(obj) {
     return {}.toString.call(obj).match(/\s([a-z]+)/i)[1].toLowerCase();
   };
 
-  var getSelector = function getSelector(element) {
+  var getSelectorFromElement = function getSelectorFromElement(element) {
     var selector = element.getAttribute('data-target');
 
     if (!selector || selector === '#') {
       var hrefAttr = element.getAttribute('href');
-      selector = hrefAttr && hrefAttr !== '#' ? hrefAttr.trim() : null;
+      selector = hrefAttr && hrefAttr !== '#' ? hrefAttr.trim() : '';
     }
 
-    return selector;
-  };
-
-  var getSelectorFromElement = function getSelectorFromElement(element) {
-    var selector = getSelector(element);
-
-    if (selector) {
+    try {
       return document.querySelector(selector) ? selector : null;
+    } catch (error) {
+      return null;
     }
-
-    return null;
-  };
-
-  var getElementFromSelector = function getElementFromSelector(element) {
-    var selector = getSelector(element);
-    return selector ? document.querySelector(selector) : null;
   };
 
   var getTransitionDurationFromElement = function getTransitionDurationFromElement(element) {
@@ -191,17 +167,6 @@
 
   var reflow = function reflow(element) {
     return element.offsetHeight;
-  };
-
-  var getjQuery = function getjQuery() {
-    var _window = window,
-        jQuery = _window.jQuery;
-
-    if (jQuery && !document.body.hasAttribute('data-no-jquery')) {
-      return jQuery;
-    }
-
-    return null;
   };
 
   /**
@@ -346,7 +311,7 @@
       if (actives) {
         actives.forEach(function (elemActive) {
           if (container !== elemActive) {
-            Collapse.collapseInterface(elemActive, 'hide');
+            Collapse._collapseInterface(elemActive, 'hide');
           }
 
           if (!activesData) {
@@ -423,11 +388,15 @@
       if (triggerArrayLength > 0) {
         for (var i = 0; i < triggerArrayLength; i++) {
           var trigger = this._triggerArray[i];
-          var elem = getElementFromSelector(trigger);
+          var selector = getSelectorFromElement(trigger);
 
-          if (elem && !elem.classList.contains(ClassName.SHOW)) {
-            trigger.classList.add(ClassName.COLLAPSED);
-            trigger.setAttribute('aria-expanded', false);
+          if (selector !== null) {
+            var elem = SelectorEngine.findOne(selector);
+
+            if (!elem.classList.contains(ClassName.SHOW)) {
+              trigger.classList.add(ClassName.COLLAPSED);
+              trigger.setAttribute('aria-expanded', false);
+            }
           }
         }
       }
@@ -465,7 +434,7 @@
     ;
 
     _proto._getConfig = function _getConfig(config) {
-      config = _objectSpread2({}, Default, {}, config);
+      config = _objectSpread({}, Default, config);
       config.toggle = Boolean(config.toggle); // Coerce string values
 
       typeCheckConfig(NAME, config, DefaultType);
@@ -494,9 +463,7 @@
 
       var selector = "[data-toggle=\"collapse\"][data-parent=\"" + parent + "\"]";
       makeArray(SelectorEngine.find(selector, parent)).forEach(function (element) {
-        var selected = getElementFromSelector(element);
-
-        _this3._addAriaAndCollapsedClass(selected, [element]);
+        _this3._addAriaAndCollapsedClass(Collapse._getTargetFromElement(element), [element]);
       });
       return parent;
     };
@@ -520,10 +487,15 @@
     } // Static
     ;
 
-    Collapse.collapseInterface = function collapseInterface(element, config) {
+    Collapse._getTargetFromElement = function _getTargetFromElement(element) {
+      var selector = getSelectorFromElement(element);
+      return selector ? SelectorEngine.findOne(selector) : null;
+    };
+
+    Collapse._collapseInterface = function _collapseInterface(element, config) {
       var data = Data.getData(element, DATA_KEY);
 
-      var _config = _objectSpread2({}, Default, {}, Manipulator.getDataAttributes(element), {}, typeof config === 'object' && config ? config : {});
+      var _config = _objectSpread({}, Default, Manipulator.getDataAttributes(element), typeof config === 'object' && config ? config : {});
 
       if (!data && _config.toggle && /show|hide/.test(config)) {
         _config.toggle = false;
@@ -542,13 +514,13 @@
       }
     };
 
-    Collapse.jQueryInterface = function jQueryInterface(config) {
+    Collapse._jQueryInterface = function _jQueryInterface(config) {
       return this.each(function () {
-        Collapse.collapseInterface(this, config);
+        Collapse._collapseInterface(this, config);
       });
     };
 
-    Collapse.getInstance = function getInstance(element) {
+    Collapse._getInstance = function _getInstance(element) {
       return Data.getData(element, DATA_KEY);
     };
 
@@ -598,10 +570,9 @@
         config = triggerData;
       }
 
-      Collapse.collapseInterface(element, config);
+      Collapse._collapseInterface(element, config);
     });
   });
-  var $ = getjQuery();
   /**
    * ------------------------------------------------------------------------
    * jQuery
@@ -609,16 +580,14 @@
    * add .collapse to jQuery only if jQuery is present
    */
 
-  /* istanbul ignore if */
+  if (typeof jQuery !== 'undefined') {
+    var JQUERY_NO_CONFLICT = jQuery.fn[NAME];
+    jQuery.fn[NAME] = Collapse._jQueryInterface;
+    jQuery.fn[NAME].Constructor = Collapse;
 
-  if ($) {
-    var JQUERY_NO_CONFLICT = $.fn[NAME];
-    $.fn[NAME] = Collapse.jQueryInterface;
-    $.fn[NAME].Constructor = Collapse;
-
-    $.fn[NAME].noConflict = function () {
-      $.fn[NAME] = JQUERY_NO_CONFLICT;
-      return Collapse.jQueryInterface;
+    jQuery.fn[NAME].noConflict = function () {
+      jQuery.fn[NAME] = JQUERY_NO_CONFLICT;
+      return Collapse._jQueryInterface;
     };
   }
 

@@ -5,7 +5,7 @@
  * --------------------------------------------------------------------------
  */
 
-import { getjQuery } from '../util/index'
+import { jQuery as $ } from '../util/index'
 import { createCustomEvent, defaultPreventedPreservedOnDispatch } from './polyfill'
 
 /**
@@ -14,7 +14,6 @@ import { createCustomEvent, defaultPreventedPreservedOnDispatch } from './polyfi
  * ------------------------------------------------------------------------
  */
 
-const $ = getjQuery()
 const namespaceRegex = /[^.]*(?=\..*)\.|.*/
 const stripNameRegex = /\..*/
 const keyEventRegex = /^key/
@@ -81,7 +80,7 @@ const nativeEvents = [
  */
 
 function getUidEvent(element, uid) {
-  return (uid && `${uid}::${uidEvent++}`) || element.uidEvent || uidEvent++
+  return uid && `${uid}::${uidEvent++}` || element.uidEvent || uidEvent++
 }
 
 function getEvent(element) {
@@ -193,9 +192,7 @@ function addHandler(element, originalTypeEvent, handler, delegationFn, oneOff) {
   }
 
   const uid = getUidEvent(originalHandler, originalTypeEvent.replace(namespaceRegex, ''))
-  const fn = delegation ?
-    bootstrapDelegationHandler(element, handler, delegationFn) :
-    bootstrapHandler(element, handler)
+  const fn = delegation ? bootstrapDelegationHandler(element, handler, delegationFn) : bootstrapHandler(element, handler)
 
   fn.delegationSelector = delegation ? handler : null
   fn.originalHandler = originalHandler
@@ -294,7 +291,7 @@ const EventHandler = {
     let defaultPrevented = false
     let evt = null
 
-    if (inNamespace && $) {
+    if (inNamespace && typeof $ !== 'undefined') {
       jQueryEvent = $.Event(event, args)
 
       $(element).trigger(jQueryEvent)

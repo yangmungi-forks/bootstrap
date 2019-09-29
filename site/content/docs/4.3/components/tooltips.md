@@ -148,7 +148,7 @@ Options can be passed via data attributes or JavaScript. For data attributes, ap
 Note that for security reasons the `sanitize`, `sanitizeFn` and `whiteList` options cannot be supplied using data attributes.
 {{< /callout >}}
 
-<table class="table">
+<table class="table table-bordered table-striped">
   <thead>
     <tr>
       <th style="width: 100px;">Name</th>
@@ -278,12 +278,6 @@ Note that for security reasons the `sanitize`, `sanitizeFn` and `whiteList` opti
       <td>null</td>
       <td>Here you can supply your own sanitize function. This can be useful if you prefer to use a dedicated library to perform sanitization.</td>
     </tr>
-    <tr>
-      <td>popperConfig</td>
-      <td>null | object</td>
-      <td>null</td>
-      <td>To change Bootstrap's default Popper.js config, see <a href="https://popper.js.org/popper-documentation.html#Popper.Defaults">Popper.js's configuration</a></td>
-    </tr>
   </tbody>
 </table>
 
@@ -349,10 +343,10 @@ Updates the position of an element's tooltip.
 
 ### Events
 
-<table class="table">
+<table class="table table-bordered table-striped">
   <thead>
     <tr>
-      <th style="width: 150px;">Event type</th>
+      <th style="width: 150px;">Event Type</th>
       <th>Description</th>
     </tr>
   </thead>

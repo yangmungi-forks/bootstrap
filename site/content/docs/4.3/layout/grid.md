@@ -53,35 +53,35 @@ While Bootstrap uses `em`s or `rem`s for defining most sizes, `px`s are used for
 
 See how aspects of the Bootstrap grid system work across multiple devices with a handy table.
 
-<table class="table">
+<table class="table table-bordered table-striped">
   <thead>
     <tr>
       <th></th>
-      <th>
+      <th class="text-center">
         Extra small<br>
-        <span class="font-weight-normal">&lt;576px</span>
+        <small>&lt;576px</small>
       </th>
-      <th>
+      <th class="text-center">
         Small<br>
-        <span class="font-weight-normal">&ge;576px</span>
+        <small>&ge;576px</small>
       </th>
-      <th>
+      <th class="text-center">
         Medium<br>
-        <span class="font-weight-normal">&ge;768px</span>
+        <small>&ge;768px</small>
       </th>
-      <th>
+      <th class="text-center">
         Large<br>
-        <span class="font-weight-normal">&ge;992px</span>
+        <small>&ge;992px</small>
       </th>
-      <th>
+      <th class="text-center">
         Extra large<br>
-        <span class="font-weight-normal">&ge;1200px</span>
+        <small>&ge;1200px</small>
       </th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <th class="text-nowrap" scope="row">Container <code class="font-weight-normal">max-width</code></th>
+      <th class="text-nowrap" scope="row">Max container width</th>
       <td>None (auto)</td>
       <td>540px</td>
       <td>720px</td>
@@ -324,91 +324,6 @@ Here's an example of customizing the Bootstrap grid at the large (`lg`) breakpoi
 </div>
 {{< /example >}}
 
-### Row columns
-
-Use the responsive `.row-cols-*` classes to quickly set the number of columns that best render your content and layout. Whereas normal `.col-*` classes apply to the individual columns (e.g., `.col-md-4`), the row columns classes are set on the parent `.row` as a shortcut.
-
-Use these row columns classes to quickly create basic grid layouts or to control your card layouts.
-
-<div class="bd-example-row">
-{{< example >}}
-<div class="container">
-  <div class="row row-cols-2">
-    <div class="col">Column</div>
-    <div class="col">Column</div>
-    <div class="col">Column</div>
-    <div class="col">Column</div>
-  </div>
-</div>
-{{< /example >}}
-</div>
-
-<div class="bd-example-row">
-{{< example >}}
-<div class="container">
-  <div class="row row-cols-3">
-    <div class="col">Column</div>
-    <div class="col">Column</div>
-    <div class="col">Column</div>
-    <div class="col">Column</div>
-  </div>
-</div>
-{{< /example >}}
-</div>
-
-<div class="bd-example-row">
-{{< example >}}
-<div class="container">
-  <div class="row row-cols-4">
-    <div class="col">Column</div>
-    <div class="col">Column</div>
-    <div class="col">Column</div>
-    <div class="col">Column</div>
-  </div>
-</div>
-{{< /example >}}
-</div>
-
-<div class="bd-example-row">
-{{< example >}}
-<div class="container">
-  <div class="row row-cols-4">
-    <div class="col">Column</div>
-    <div class="col">Column</div>
-    <div class="col-6">Column</div>
-    <div class="col">Column</div>
-  </div>
-</div>
-{{< /example >}}
-</div>
-
-<div class="bd-example-row">
-{{< example >}}
-<div class="container">
-  <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4">
-    <div class="col">Column</div>
-    <div class="col">Column</div>
-    <div class="col">Column</div>
-    <div class="col">Column</div>
-  </div>
-</div>
-{{< /example >}}
-</div>
-
-You can also use the accompanying Sass mixin, `row-cols()`:
-
-{{< highlight scss >}}
-.element {
-  // Three columns to start
-  @include row-cols(3);
-
-  // Five columns from medium breakpoint up
-  @include media-breakpoint-up(md) {
-    @include row-cols(5);
-  }
-}
-{{< /highlight >}}
-
 ## Alignment
 
 Use flexbox alignment utilities to vertically and horizontally align columns. **Internet Explorer 10-11 do not support vertical alignment of flex items when the flex container has a `min-height` as shown below.** [See Flexbugs #3 for more details.](https://github.com/philipwalton/flexbugs#flexbug-3)
@@ -621,13 +536,13 @@ Use `.order-` classes for controlling the **visual order** of your content. Thes
 <div class="container">
   <div class="row">
     <div class="col">
-      First in DOM, no order applied
+      First, but unordered
     </div>
     <div class="col order-5">
-      Second in DOM, with a larger order
+      Second, but last
     </div>
     <div class="col order-1">
-      Third in DOM, with an order of 1
+      Third, but first
     </div>
   </div>
 </div>
@@ -641,13 +556,13 @@ There are also responsive `.order-first` and `.order-last` classes that change t
 <div class="container">
   <div class="row">
     <div class="col order-last">
-      First in DOM, ordered last
+      First, but last
     </div>
     <div class="col">
-      Second in DOM, unordered
+      Second, but unordered
     </div>
     <div class="col order-first">
-      Third in DOM, ordered first
+      Third, but first
     </div>
   </div>
 </div>

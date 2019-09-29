@@ -1,7 +1,6 @@
 {
   "root": true,
   "parserOptions": {
-    "ecmaVersion": 5,
     "sourceType": "script"
   },
   "extends": [
@@ -33,9 +32,7 @@
       "never"
     ],
     "strict": "error",
-    "unicorn/consistent-function-scoping": "off",
     "unicorn/no-for-loop": "off",
-    "unicorn/prefer-dataset": "off",
     "unicorn/prefer-includes": "off",
     "unicorn/prefer-node-append": "off",
     "unicorn/prefer-query-selector": "off",
