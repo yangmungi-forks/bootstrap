@@ -153,7 +153,7 @@ Options can be passed via data attributes or JavaScript. For data attributes, ap
 Note that for security reasons the `sanitize`, `sanitizeFn` and `whiteList` options cannot be supplied using data attributes.
 {{< /callout >}}
 
-<table class="table table-bordered table-striped">
+<table class="table">
   <thead>
     <tr>
       <th style="width: 100px;">Name</th>
@@ -281,6 +281,12 @@ Note that for security reasons the `sanitize`, `sanitizeFn` and `whiteList` opti
       <td>null</td>
       <td>Here you can supply your own sanitize function. This can be useful if you prefer to use a dedicated library to perform sanitization.</td>
     </tr>
+    <tr>
+      <td>popperConfig</td>
+      <td>null | object</td>
+      <td>null</td>
+      <td>To change Bootstrap's default Popper.js config, see <a href="https://popper.js.org/popper-documentation.html#Popper.Defaults">Popper.js's configuration</a></td>
+    </tr>
   </tbody>
 </table>
 
@@ -299,7 +305,7 @@ Options for individual popovers can alternatively be specified through the use o
 
 #### show
 
-Reveals an element's popover. **Returns to the caller before the popover has actually been shown** (i.e. before the `shown.bs.popover` event occurs). This is considered a "manual" triggering of the popover. Popovers whose both title and content are zero-length are never displayed.
+Reveals an element's popover. **Returns to the caller before the popover has actually been shown** (i.e. before the `shown.bs.popover` event occurs). This is considered a "manual" triggering of the popover. Popovers whose title and content are both zero-length are never displayed.
 
 {{< highlight js >}}myPopover.show(){{< /highlight >}}
 
@@ -345,21 +351,21 @@ Updates the position of an element's popover.
 
 {{< highlight js >}}myPopover.update(){{< /highlight >}}
 
-#### _getInstance
+#### getInstance
 
 *Static* method which allows you to get the popover instance associated with a DOM element
 
 {{< highlight js >}}
 var exampleTriggerEl = document.getElementById('example')
-var popover = bootstrap.Popover._getInstance(exampleTriggerEl) // Return a Bootstrap popover instance
+var popover = bootstrap.Popover.getInstance(exampleTriggerEl) // Returns a Bootstrap popover instance
 {{< /highlight >}}
 
 ### Events
 
-<table class="table table-bordered table-striped">
+<table class="table">
   <thead>
     <tr>
-      <th style="width: 150px;">Event Type</th>
+      <th style="width: 150px;">Event type</th>
       <th>Description</th>
     </tr>
   </thead>

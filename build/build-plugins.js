@@ -12,7 +12,6 @@ const rollup = require('rollup')
 const babel = require('rollup-plugin-babel')
 const banner = require('./banner.js')
 
-const TEST = process.env.NODE_ENV === 'test'
 const plugins = [
   babel({
     // Only transpile our source code
@@ -23,7 +22,7 @@ const plugins = [
       'createClass',
       'inheritsLoose',
       'defineProperty',
-      'objectSpread'
+      'objectSpread2'
     ]
   })
 ]
@@ -31,25 +30,21 @@ const bsPlugins = {
   Data: path.resolve(__dirname, '../js/src/dom/data.js'),
   EventHandler: path.resolve(__dirname, '../js/src/dom/event-handler.js'),
   Manipulator: path.resolve(__dirname, '../js/src/dom/manipulator.js'),
+  Polyfill: path.resolve(__dirname, '../js/src/dom/polyfill.js'),
   SelectorEngine: path.resolve(__dirname, '../js/src/dom/selector-engine.js'),
-  Alert: path.resolve(__dirname, '../js/src/alert.js'),
-  Button: path.resolve(__dirname, '../js/src/button.js'),
-  Carousel: path.resolve(__dirname, '../js/src/carousel.js'),
-  Collapse: path.resolve(__dirname, '../js/src/collapse.js'),
-  Dropdown: path.resolve(__dirname, '../js/src/dropdown.js'),
-  Modal: path.resolve(__dirname, '../js/src/modal.js'),
-  Popover: path.resolve(__dirname, '../js/src/popover.js'),
-  ScrollSpy: path.resolve(__dirname, '../js/src/scrollspy.js'),
-  Tab: path.resolve(__dirname, '../js/src/tab.js'),
-  Toast: path.resolve(__dirname, '../js/src/toast.js'),
-  Tooltip: path.resolve(__dirname, '../js/src/tooltip.js')
+  Alert: path.resolve(__dirname, '../js/src/alert/alert.js'),
+  Button: path.resolve(__dirname, '../js/src/button/button.js'),
+  Carousel: path.resolve(__dirname, '../js/src/carousel/carousel.js'),
+  Collapse: path.resolve(__dirname, '../js/src/collapse/collapse.js'),
+  Dropdown: path.resolve(__dirname, '../js/src/dropdown/dropdown.js'),
+  Modal: path.resolve(__dirname, '../js/src/modal/modal.js'),
+  Popover: path.resolve(__dirname, '../js/src/popover/popover.js'),
+  ScrollSpy: path.resolve(__dirname, '../js/src/scrollspy/scrollspy.js'),
+  Tab: path.resolve(__dirname, '../js/src/tab/tab.js'),
+  Toast: path.resolve(__dirname, '../js/src/toast/toast.js'),
+  Tooltip: path.resolve(__dirname, '../js/src/tooltip/tooltip.js')
 }
-const rootPath = TEST ? '../js/coverage/dist/' : '../js/dist/'
-
-if (TEST) {
-  bsPlugins.Util = path.resolve(__dirname, '../js/src/util/index.js')
-  bsPlugins.Sanitizer = path.resolve(__dirname, '../js/src/util/sanitizer.js')
-}
+const rootPath = '../js/dist/'
 
 const defaultPluginConfig = {
   external: [
@@ -69,13 +64,16 @@ function getConfigByPluginKey(pluginKey) {
     pluginKey === 'Data' ||
     pluginKey === 'Manipulator' ||
     pluginKey === 'EventHandler' ||
+    pluginKey === 'Polyfill' ||
     pluginKey === 'SelectorEngine' ||
     pluginKey === 'Util' ||
     pluginKey === 'Sanitizer'
   ) {
     return {
-      external: [],
-      globals: {}
+      external: [bsPlugins.Polyfill],
+      globals: {
+        [bsPlugins.Polyfill]: 'Polyfill'
+      }
     }
   }
 
@@ -144,6 +142,7 @@ const domObjects = [
   'Data',
   'EventHandler',
   'Manipulator',
+  'Polyfill',
   'SelectorEngine'
 ]
 
